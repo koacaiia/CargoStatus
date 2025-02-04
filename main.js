@@ -22,6 +22,7 @@ const messaging = firebase.messaging();
 const storage_f = firebase.storage();
 const deptName = "WareHouseDept2";
 const dateDiv = document.querySelector("#titleDate");
+const clientDiv = document.querySelector("#titleClient");
 const dateT = (d)=>{
     let result_date;
     try{
@@ -41,3 +42,27 @@ const dateT = (d)=>{
 };
 
 dateDiv.value = dateT(new Date());
+initData(dateDiv.value);
+function initData(date){
+    console.log(date);
+    // const clientV = clientDiv.innerHTML;
+    const clientV = "비앤케이에이";
+    const month= date.substring(5,7)+"월";
+    console.log(month);
+    database_f.ref("DeptName/"+deptName).get().then((snapshot)=>{
+        console.log(snapshot.val());
+        const inData = snapshot.val()["InCargo"][month][date];
+        const outData = snapshot.val()["OutCargo"][month][date];
+        console.log(inData,outData);
+        for(let i in inData){
+            if(inData[i]["consignee"]==clientV){
+                console.log(inData[i]);
+            }
+        }
+        for(let i in outData){
+            if(outData[i]["consigneeName"]==clientV){
+                console.log(outData[i]);
+            }
+        };
+    });
+};
