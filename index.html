@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cargo Status</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
@@ -12,23 +12,156 @@
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-functions-compat.js"></script> -->
 </head>
 <body>
-    <div id="main" style="display:grid;grid-template-rows:1fr 5fr 5fr;height:97vh">
-        <div id="mainTile" style="display:grid;grid-template-columns:1fr 1fr 1fr">
-            <div id="titleClient">
-                화주명
+    <div id="mainTitle" style="display:grid;grid-template-rows:0.8fr 1.2fr;border-radius: 10px;background-color: rgb(151, 168, 244);padding:5px;grid-gap:2px">
+        <div id="mainDateDiv" style="display:grid;grid-template-columns:1fr 1fr 1fr ;grid-gap:1px">
+            <input tyep="text" id="titleClient" placeholder="PassWord" id="titleClient()">
+            <input type="date" id="dateSelect" value="yyyy-MM-dd" onchange="dateChanged()">
+            <button id="titleConfirm" onclick="titleConfirm()">확인</button>
+            
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr" id="mainStatus" >
+            <div style="display:grid;grid-template-rows:1fr 1fr 1fr;border: 1px solid black;" id="mainStatusIn">
+                <h3 style="text-align: center;">입고</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
+                    <h3>20Ft</h3>
+                    <h3>40Ft</h3>
+                    <h3>Pallet</h3>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
+                    <h3>20Ft</h3>
+                    <h3>40Ft</h3>
+                    <h3>Pallet</h3>
+                </div>
             </div>
-            <input type="date" id="titleDate">
-            <button id="titleBtn">확인</button>    
-        </div>
-        <div class="mainStatus" id="mainIn">
-
-        </div>
-        <div class="mainStatus" id="mainOut">
-
+            <div style="display:grid;grid-template-rows:1fr 1fr 1fr;border: 1px solid black;" id="mainStatusOut">
+                <h3 style="text-align: center;">출고</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr">
+                    <h3>건수</h3>
+                    <h3>Pallet</h3>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr">
+                    <h3>건수</h3>
+                    <h3>Pallet</h3>
+                </div>
+            </div>
+            
         </div>
     </div>
-<script src="main.js"></script>    
+    <div id="mainContent">
+        <div class="main" id="mainIn" style="background-color: rgb(199, 192, 205);border:3px solid black;border-radius:10px">
+            <table class="tableW" id="tableIn">
+                <colgroup>
+                    <col style="width: 20%">
+                    <col style="width: 30%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                    <col style="width: 30%">
+                </colgroup>    
+                <thead>
+                    <tr>
+                        <th style="width:20%">화주</th>
+                        <th style="width:35%">Con't No</th>
+                        <th style="width:5%">PLT</th>
+                        <th style="width:10%">유형</th>
+                        <th style="width:30%">품명</th>
+                    </tr>
+                </thead>
+                <tbody id="tBodyIn">
+                </tbody>                
+            </table>    
+        </div>
+        <div class="main" id="mainOut" style="background-color: rgb(159, 197, 197);border:3px solid black;border-radius:10px">
+            <table class="tableW" id="tableOut">
+                <colgroup>
+                    <col style="width: 20%">
+                    <col style="width: 20%">
+                    <col style="width: 30%">
+                    <col style="width: 30%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                </colgroup>    
+                <thead>
+                    <tr>
+                        <th style="width:20%;background-color:rgb(21, 64, 119)">화주</th>
+                        <th style="width:20%;background-color:rgb(21, 64, 119)">도착지</th>
+                        <th style="width:30%;background-color:rgb(21, 64, 119)">품명</th>
+                        <th style="width:30%;background-color:rgb(21, 64, 119)">관리번호</th>
+                        <th style="width:10%;background-color:rgb(21, 64, 119)">PLT</th>
+                        <th style="width:10%;background-color:rgb(21, 64, 119)">EA</th>
+                        
+                    </tr>
+                </thead>
+                <tbody id="tBodyOut">
+                </tbody>                
+            </table>
+        </div>
+    </div>
+    
+    <div id="mainPop" style="display:none">
+        <div id="popTitle">
+            <div  style="display:grid;grid-template-columns:1fr 1fr 1fr">
+                <h3 class="popTitleC"></h3>
+                <h3 class="popTitleC"></h3>
+                <h5 class="popTitleC"></h5>
+            </div>
+            <div id="popInfoDiv">
+                <table class="tableW" id =popInfoTable >
+                    <thead>
+                    <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="mainPopDiv">
+                <div id="imgTableDiv">
+                    <table id="popImgTable" >
+                        <tbody id="popImgTableTbody">
+                            <tr id="imgTr" style="height:30vh">
+    
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div id="popBtn" >
+                    
+                    <div style="display:grid;grid-template-rows:7vh 12vh;row-gap:1vh">
+                        <div style="display:grid;grid-template-columns:1fr 1fr">
+                            <button id="btnClose" style="font-weight: bold;font-size:large;"onclick="popClose()">닫기(목록으로)</button>
+                            <button id="btnReport " style="font-weight: bold;font-size:large;"onclick="popSaveAll()">사진 전체저장</button>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;column-gap:3vw;">
+                            <div class="filebox">
+                                <label for="fileInput">파일찾기</label> 
+                                <!-- <input class="upload-name" value="첨부파일" placeholder="첨부파일"> -->
+                                <input type="file" id="fileInput" multiple accept="image/*"  >
+                            </div>
+                            <div class="filebox">
+                                <label for="btnUpLoad" >사진등록</label>
+                                <button id="btnUpLoad" style="height:100%;font-weight: bold;font-size:larger;color:red" onclick="upLoad()">사진등록</button>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="imgModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <img id="modalImg" src="" alt="Image" style="width:100%">
+        <div class="modal-buttons">
+            <button onclick="fileRemove()">삭제</button>
+            <button onclick="saveImg()">저장</button>
+        </div>
+
+    </div>
+
+</div>       
+<script src="main.js"></script>
 </body>
-</html>
