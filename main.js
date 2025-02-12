@@ -48,6 +48,7 @@ const dateT = (d)=>{
 const dateSelect = document.querySelector("#dateSelect");
 const tBodyIn=document.querySelector("#tBodyIn");
 const tBodyOut=document.querySelector("#tBodyOut");
+const clientSelect = document.querySelector("#titleClient");
 function dateChanged(){
     const d = dateSelect.value;
     titleDate.innerHTML = d;
@@ -84,8 +85,12 @@ function getData(date){
         let ft4=0;
         let ft2=0;
         let lcl=0;
+        let plt=0;
         for(let i in val){
-            let spec="";
+            console.log(val[i]);
+            const cli=val[i]["consignee"]
+            if(cli =="코만"){
+              let spec="";
             if(val[i]["container40"]==="1"){
                 spec="40FT";
               ft4+=1;}
@@ -130,8 +135,14 @@ function getData(date){
             });
             if(val[i]["working"]!=""){
                 tr.style="color:red;";}
+                plt=plt+parseInt(val[i]["Pqty"]);
+            }
+            
         }
         toastOn("40FT:"+ft4+"   20FT:"+ft2+"    LCL:"+lcl,4000);
+        document.querySelector("#title40").innerHTML=ft4
+        document.querySelector("#title20").innerHTML=ft2
+        document.querySelector("#titleP").innerHTML=plt
     }).
     catch((e)=>{
       console.log(e);
