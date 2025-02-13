@@ -442,7 +442,6 @@ function popUp(){
     }
     // document.querySelector(".upload-name").value=document.querySelector("#fileInput").value;
   };
-  fileInput.addEventListener("change",handleImgInput);
   fileTr.replaceChildren();
   let imgRef=ref.replace("DeptName","images").replaceAll("/",",");
   // imgRef.replace("/",",");
@@ -468,7 +467,7 @@ function popUp(){
         });
         img.style.display="block";
         td.style.width="32.5vw";
-        td.style.height="29vh";
+        td.style.height="50vh";
         img.style.width="100%";
         img.style.height="100%";
         img.style.objectFit = "scale-down"; // Ensures the image covers the container without distortion
@@ -551,7 +550,7 @@ function upLoad(){
                             });
                             img.style.display="block";
                             td.style.width="32.5vw";
-                            td.style.height="37vh";
+                            td.style.height="50vh";
                             img.style.width="100%";
                             img.style.height="100%";
                             img.style.objectFit = "cover"; // Ensures the image covers the container without distortion
