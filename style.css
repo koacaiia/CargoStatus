@@ -15,7 +15,7 @@ body{
     /* border:1px solid black;
     border-radius: 3px; */
     width:99vw;
-    height:75vh;
+    height:70vh;
     overflow:auto;
 }
 .tableW{
@@ -280,6 +280,8 @@ button{
     justify-content: space-around;
     margin-top: 20px;
 }
-h3{
+.title{
     text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
 }

@@ -15,7 +15,7 @@
     <!-- <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-functions-compat.js"></script> -->
 </head>
 <body>
-    <div id="mainTitle" style="display:grid;grid-template-rows:0.8fr 1.2fr;border-radius: 10px;background-color: rgb(151, 168, 244);padding:5px;grid-gap:2px">
+    <div id="mainTitle" style="display:grid;grid-template-rows:0.8fr 1.2fr;border-radius: 10px;background-color: rgb(151, 168, 244);padding:5px;grid-gap:2px;height:25vh">
         <div id="mainDateDiv" style="display:grid;grid-template-columns:1fr 1fr 1fr ;grid-gap:1px">
             <input tyep="text" id="titleClient" placeholder="PassWord" id="titleClient()">
             <input type="date" id="dateSelect" value="yyyy-MM-dd" onchange="dateChanged()">
@@ -24,27 +24,27 @@
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr" id="mainStatus" >
             <div style="display:grid;grid-template-rows:1fr 1fr 1fr;border: 1px solid black;" id="mainStatusIn">
-                <h3 style="text-align: center;">입고</h3>
+                <div class="title" style="text-align: center;">입고</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
-                    <h3>20Ft</h3>
-                    <h3>40Ft</h3>
-                    <h3>Pallet</h3>
+                    <div class="title">20Ft</div>
+                    <div class="title">40Ft</div>
+                    <div class="title">Pallet</div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
-                    <h3 id="title20">20Ft</h3>
-                    <h3 id="title40">40Ft</h3>
-                    <h3 id="titleP">Pallet</h3>
+                    <div class="title" id="title20">20Ft</div>
+                    <div class="title" id="title40">40Ft</div>
+                    <div class="title" id="titleP">Pallet</div>
                 </div>
             </div>
             <div style="display:grid;grid-template-rows:1fr 1fr 1fr;border: 1px solid black;" id="mainStatusOut">
-                <h3 style="text-align: center;">출고</h3>
+                <div class="title" style="text-align: center;">출고</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr">
-                    <h3>건수</h3>
-                    <h3>Pallet</h3>
+                    <div class="title">건수</div>
+                    <div class="title">Pallet</div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr">
-                    <h3>건수</h3>
-                    <h3>Pallet</h3>
+                    <div class="title" id="titleOe">건수</div>
+                    <div class="title" id="titleOp">Pallet</div>
                 </div>
             </div>
             

@@ -57,9 +57,11 @@ function dateChanged(){
     getData(d);
 }
 dateSelect.value=dateT(new Date());
+let cliV;
+//  = clientSelect.value;
 // titleDate.innerHTML = dateT(new Date());
 // titleDate.innerHTML = "2024-09-24";
-
+cliV="비앤케이에이"
 function getData(date){
     const year = date.substring(0,4);
     const month=date.substring(5,7);
@@ -89,7 +91,7 @@ function getData(date){
         for(let i in val){
             console.log(val[i]);
             const cli=val[i]["consignee"]
-            if(cli =="코만"){
+            if(cli ==cliV){
               let spec="";
             if(val[i]["container40"]==="1"){
                 spec="40FT";
@@ -151,8 +153,14 @@ function getData(date){
 
     database_f.ref(refO).get().then((snapshot)=>{
         const val=snapshot.val();
+        let outE = 0;
+        let outP = 0;
         for(let i in val){
+          if(val[i]["consigneeName"]==cliV){
             const tr = document.createElement("tr");
+            outE+=1;
+            outP+=parseInt(val[i]["totalQty"].replace("PLT",""));
+            console.log(val[i]["totalQty"].replace("PLT",""));
             tr.id=val[i]["keyValue"];
             let des = val[i]["description"];
             let manNo = val[i]["managementNo"];
@@ -193,7 +201,11 @@ function getData(date){
             });
             if(val[i]["workprocess"]!="미"){
               tr.style="color:red;";}
+          }
         }
+        document.querySelector("#titleOe").innerHTML=outE;
+        console.log(outP);
+        document.querySelector("#titleOp").innerHTML=outP;
     }).catch((e)=>{
       console.log(e);
         // alert(e);
