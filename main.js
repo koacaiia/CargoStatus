@@ -121,7 +121,8 @@ function getData(date){
                 popUp();
             });
             if(val[i]["working"]!=""){
-                tr.style="color:red;";}
+                tr.style="color:red;font-weight:bold";
+                }
                 plt=plt+parseInt(val[i]["Pqty"]);
             }
             
@@ -185,7 +186,7 @@ function getData(date){
                 popUp();
             });
             if(val[i]["workprocess"]!="미"){
-              tr.style="color:red;";}
+              tr.style="color:red;font-weight:bold";}
           }
         }
         document.querySelector("#titleOe").innerHTML=outE;
@@ -570,15 +571,10 @@ function upLoad(){
       w={"workprocess":"완"}
     }
     database_f.ref(ref).update(w);
-  
 }
-
-
 if(mC){
-  
   // document.querySelector("#titleDate").style="display:none";
   // toastOn("모바일 환경에서 접속 됩니다.1");
-  
   // const osRe = document.querySelector("#osRe");
   // osRe.classList.add("mobile");
   // osRe.classList.remove("osInput");
