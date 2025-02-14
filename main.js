@@ -67,21 +67,6 @@ function getData(date){
     const month=date.substring(5,7);
     const refI ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
     const refO ="DeptName/"+deptName+"/OutCargo/"+month+"월/"+date;
-    const refOs ="DeptName/"+deptName+"/Os/"+year+"/"+month+"월/"+date;
-    database_f.ref(refOs).get().then((snapshot)=>{
-      const val = snapshot.val();
-      if(val==null){
-        document.querySelector("#osMo").value=0;
-        document.querySelector("#osWf").value=0;
-        document.querySelector("#osWo").value=0;
-        document.querySelector("#osRe").value="";
-      }else{
-        document.querySelector("#osMo").value=val["osM"];
-        document.querySelector("#osWf").value=val["osWf"];
-        document.querySelector("#osWo").value=val["osWo"];
-        document.querySelector("#osRe").value=val["osR"];
-      }
-    }).catch((e)=>{console.log(e)});
     database_f.ref(refI).get().then((snapshot)=>{
         const val=snapshot.val();
         let ft4=0;
@@ -204,7 +189,6 @@ function getData(date){
           }
         }
         document.querySelector("#titleOe").innerHTML=outE;
-        console.log(outP);
         document.querySelector("#titleOp").innerHTML=outP;
     }).catch((e)=>{
       console.log(e);
@@ -212,7 +196,6 @@ function getData(date){
     });
     
 }
-getData(dateSelect.value);
 function popUp(){
     const mainTitle = document.querySelector("#mainTitle");
     mainTitle.style="display:none";
@@ -838,5 +821,26 @@ function popSaveAll(){
           console.error("Error uploading file:", error);
       });
     });
-
 }
+function titleConfirm(){
+  const clientEncrypt =clientSelect.value;
+  if(clientEncrypt==508820){
+    cliV="비앤케이에이";}
+  tBodyIn.replaceChildren();
+  tBodyOut.replaceChildren();
+  getData(dateSelect.value);
+}
+function encryptKoreanToNumber(text) {
+  let encryptedText =0;
+  for (let char of text) {
+      const charCode = char.charCodeAt(0);
+      if (charCode >= 0xAC00 && charCode <= 0xD7A3) { // 한글 음절 범위
+          const number = (charCode - 0xAC00 + 100000).toString().padStart(6, '0');
+          encryptedText += parseInt(number);
+      } else {
+          encryptedText += parseInt(char); // 한글이 아닌 문자는 그대로 추가
+      }
+  }
+  return encryptedText;
+}
+console.log(encryptKoreanToNumber("가나다라라"));
