@@ -17,6 +17,13 @@
             text-align: left;
         }
     </style>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
     <h1>재고 목록</h1>
@@ -38,19 +45,6 @@
             <!-- Stock list items will be added here -->
         </tbody>
     </table>
-    <script>
-        document.getElementById('stockForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const entryDate = document.getElementById('entryDate').value;
-            const item = document.getElementById('item').value;
-            const stockList = document.getElementById('stockList');
-            const newRow = stockList.insertRow();
-            const dateCell = newRow.insertCell(0);
-            const itemCell = newRow.insertCell(1);
-            dateCell.textContent = entryDate;
-            itemCell.textContent = item;
-            document.getElementById('stockForm').reset();
-        });
-    </script>
+    <script src="stock.js"></script>
 </body>
 </html>

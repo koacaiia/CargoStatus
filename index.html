@@ -22,7 +22,7 @@
             <button id="titleConfirm" onclick="titleConfirm()">확인</button>
             
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr" id="mainStatus" >
+        <div style="display:grid;grid-template-columns:1fr 1fr 0.3fr" id="mainStatus" >
             <div style="display:grid;grid-template-rows:1fr 1fr 1fr;border: 1px solid black;" id="mainStatusIn">
                 <div class="title" style="text-align: center;">입고</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
@@ -35,6 +35,7 @@
                     <div class="title" id="title40">40Ft</div>
                     <div class="title" id="titleP">Pallet</div>
                 </div>
+                
             </div>
             <div style="display:grid;grid-template-rows:1fr 1fr 1fr;border: 1px solid black;" id="mainStatusOut">
                 <div class="title" style="text-align: center;">출고</div>
@@ -47,7 +48,12 @@
                     <div class="title" id="titleOp">Pallet</div>
                 </div>
             </div>
-            
+            <button id="btnList" onclick="StockList()">재고목록</button>
+            <script>
+                function StockList(){
+                    window.location.href = "stockList.html";
+                }
+            </script>    
         </div>
     </div>
     <div id="mainContent">

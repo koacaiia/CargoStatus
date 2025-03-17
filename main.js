@@ -33,7 +33,7 @@ const dateT = (d)=>{
     let result_month = d.getMonth()+1;
     let result_day =d.getDate();
     if(result_month<10){
-        result_month ="0"+result_month;ㅈ
+        result_month ="0"+result_month;
     };
     if(result_day <10){
         result_day ="0"+result_day;
@@ -41,6 +41,7 @@ const dateT = (d)=>{
     result_date = d.getFullYear()+"-"+result_month+"-"+result_day;
     return result_date;
     }catch(e){
+        console.log(e);
     return result_date ="미정";
     }
 };
@@ -51,12 +52,13 @@ const tBodyOut=document.querySelector("#tBodyOut");
 const clientSelect = document.querySelector("#titleClient");
 function dateChanged(){
     const d = dateSelect.value;
-    titleDate.innerHTML = d;
     tBodyIn.replaceChildren();
     tBodyOut.replaceChildren();
     getData(d);
 }
 dateSelect.value=dateT(new Date());
+console.log(dateT(new Date()));
+getData("2025-03-10");
 let cliV;
 //  = clientSelect.value;
 // titleDate.innerHTML = dateT(new Date());
