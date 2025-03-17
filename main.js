@@ -58,7 +58,7 @@ function dateChanged(){
 }
 dateSelect.value=dateT(new Date());
 console.log(dateT(new Date()));
-getData("2025-03-10");
+getData(dateSelect.value);
 let cliV;
 //  = clientSelect.value;
 // titleDate.innerHTML = dateT(new Date());

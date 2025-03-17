@@ -21,3 +21,13 @@ const database_f = firebase.database();
 const messaging = firebase.messaging();
 const storage_f = firebase.storage();
 const deptName = "WareHouseDept2";
+const cL = document.querySelector("#clientList");
+getList("2025-03-17");
+function getList(date){
+    const month=date.substring(5,7);
+    const ref ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
+    database_f.ref(ref).on("value",(snapshot)=>{
+        console.log(snapshot.val());
+    });
+
+}
