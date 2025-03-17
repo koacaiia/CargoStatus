@@ -29,7 +29,7 @@ const dateT = (d)=>{
     let result_month = d.getMonth()+1;
     let result_day =d.getDate();
     if(result_month<10){
-        result_month ="0"+result_month;
+        result_month ="0"+result_month;ㅈ
     };
     if(result_day <10){
         result_day ="0"+result_day;

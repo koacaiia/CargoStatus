@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockList</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>재고 목록</h1>
+    <form id="stockForm">
+        <label for="entryDate">입고일:</label>
+        <input type="date" id="entryDate" name="entryDate" required>
+        <label for="item">품목:</label>
+        <input type="text" id="item" name="item" required>
+        <button type="submit">추가</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>입고일</th>
+                <th>품목</th>
+            </tr>
+        </thead>
+        <tbody id="stockList">
+            <!-- Stock list items will be added here -->
+        </tbody>
+    </table>
+    <script>
+        document.getElementById('stockForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const entryDate = document.getElementById('entryDate').value;
+            const item = document.getElementById('item').value;
+            const stockList = document.getElementById('stockList');
+            const newRow = stockList.insertRow();
+            const dateCell = newRow.insertCell(0);
+            const itemCell = newRow.insertCell(1);
+            dateCell.textContent = entryDate;
+            itemCell.textContent = item;
+            document.getElementById('stockForm').reset();
+        });
+    </script>
+</body>
+</html>
