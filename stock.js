@@ -27,7 +27,20 @@ function getList(date){
     const month=date.substring(5,7);
     const ref ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
     database_f.ref(ref).on("value",(snapshot)=>{
-        console.log(snapshot.val());
+      console.log(cL);
+      const val = snapshot.val();
+      let cList=[];
+      for(const key in val){
+        console.log(cList)
+        if(!cList.includes(val[key]["consignee"])){
+          cList.push(val[key]["consignee"]);
+          const op = document.createElement("option");
+          op.value=val[key]["consignee"];
+          op.text=val[key]["consignee"];
+          cL.appendChild(op);
+        }
+      }
+      
     });
 
 }
