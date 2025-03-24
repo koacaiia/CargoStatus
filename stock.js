@@ -22,22 +22,28 @@ const messaging = firebase.messaging();
 const storage_f = firebase.storage();
 const deptName = "WareHouseDept2";
 const cL = document.querySelector("#clientList");
+const dateEle = document.querySelector("#entryDate");
+dateEle.addEventListener("change",()=>{
+  getList(dateEle.value);
+});
 getList("2025-03-17");
 function getList(date){
     const month=date.substring(5,7);
     const ref ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
     database_f.ref(ref).on("value",(snapshot)=>{
-      console.log(cL);
       const val = snapshot.val();
+      const op = document.createElement("option");
+          op.value=date;
+          op.text=date+" 입고 거래처 목록록";
+          cL.appendChild(op);
       let cList=[];
       for(const key in val){
-        console.log(cList)
         if(!cList.includes(val[key]["consignee"])){
           cList.push(val[key]["consignee"]);
-          const op = document.createElement("option");
-          op.value=val[key]["consignee"];
-          op.text=val[key]["consignee"];
-          cL.appendChild(op);
+          const op1 = document.createElement("option");
+          op1.value=val[key]["consignee"];
+          op1.text=val[key]["consignee"];
+          cL.appendChild(op1);
         }
       }
       
