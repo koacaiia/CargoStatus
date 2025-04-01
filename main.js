@@ -841,4 +841,4 @@ function encryptKoreanToNumber(text) {
   }
   return encryptedText;
 }
-console.log(encryptKoreanToNumber("가나다라라"));
+window.location.href = "stockList.html";

@@ -16,37 +16,127 @@ const doc =document.documentElement;
 function fullScreen(){
   doc.requestFullscreen();
 }
+const dateT = (d)=>{
+  let result_date;
+  try{
+  let result_month = d.getMonth()+1;
+  let result_day =d.getDate();
+  if(result_month<10){
+      result_month ="0"+result_month;
+  };
+  if(result_day <10){
+      result_day ="0"+result_day;
+  };
+  result_date = d.getFullYear()+"-"+result_month+"-"+result_day;
+  return result_date;
+  }catch(e){
+      console.log(e);
+  return result_date ="미정";
+  }
+};
 fullScreen();
 const database_f = firebase.database();
 const messaging = firebase.messaging();
 const storage_f = firebase.storage();
 const deptName = "WareHouseDept2";
+let elapseDate;
 const cL = document.querySelector("#clientList");
 const dateEle = document.querySelector("#entryDate");
+const desEle = document.querySelector("#desList");
+const tBody = document.querySelector("#stockList");
+const tdList = ["date","bl","description","incargo","Pqty","remark"];
+dateEle.valueAsDate = new Date();
 dateEle.addEventListener("change",()=>{
   getList(dateEle.value);
+  elapseDate =[];
+  elapseDate.push(dateEle.value);
 });
-getList("2025-03-17");
-function getList(date){
-    const month=date.substring(5,7);
-    const ref ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
-    database_f.ref(ref).on("value",(snapshot)=>{
-      const val = snapshot.val();
-      const op = document.createElement("option");
-          op.value=date;
-          op.text=date+" 입고 거래처 목록록";
+getList(dateEle.value);
+function getList(date,client){
+    console.log(date,client);
+    cL.replaceChildren();
+    tBody.replaceChildren();
+    const op = document.createElement("option");
+          op.value="clientValue";
+          op.text="입고 거래처 목록록";
           cL.appendChild(op);
-      let cList=[];
-      for(const key in val){
-        if(!cList.includes(val[key]["consignee"])){
-          cList.push(val[key]["consignee"]);
-          const op1 = document.createElement("option");
-          op1.value=val[key]["consignee"];
-          op1.text=val[key]["consignee"];
-          cL.appendChild(op1);
-        }
-      }
-      
-    });
-
-}
+    let cList=[];      
+    for(let i=0;i<date.length;i++){
+      const month=date[i].substring(5,7);
+      const ref ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date[i];
+      database_f.ref(ref).on("value",(snapshot)=>{
+        const val = snapshot.val();
+        
+          for(const key in val){
+            console.log(val[key]["consignee"],client);
+            if(client==undefined||client ==val[key]["consignee"]){
+              const tr = document.createElement("tr");
+              for(let i=0;i<tdList.length;i++){
+                const td = document.createElement("td");
+                td.innerHTML=val[key][tdList[i]];
+                tr.appendChild(td);
+              }
+              tr.setAttribute("id",val[key]["refValue"]);
+              tBody.appendChild(tr);
+              if(!cList.includes(val[key]["consignee"])){
+                cList.push(val[key]["consignee"]);
+                const op1 = document.createElement("option");
+                op1.value=val[key]["consignee"];
+                op1.text=val[key]["consignee"];
+                cL.appendChild(op1);
+              }
+            }
+            
+          }
+      });
+    }
+  }
+  cL.addEventListener("change",()=>{
+    const client = cL.value;
+    console.log(client);
+    getList(elapseDate,client);
+  });
+  function peroid(value){
+    console.log(value.id);
+    const today = new Date(); // 현재 날짜
+    const dayOfWeek = today.getDay(); // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+    let mondayOffset; 
+    let sundayOffset;
+    let startDay;
+    let endDay;
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 
+    if(value.id=="thisWeek"){
+      mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // 이번주 월요일로 이동하는 오프셋
+      sundayOffset = dayOfWeek === 0 ? 0 : 6 - dayOfWeek; // 이번주 토요일로 이동하는 오프셋
+      startDay = new Date(today);
+      startDay.setDate(today.getDate() + mondayOffset); // 이번 주 월요일
+      endDay = new Date(today);
+      endDay.setDate(today.getDate() + sundayOffset); // 이번 주 일요일
+    }
+    if(value.id=="lastWeek"){
+      mondayOffset = dayOfWeek === 0 ? -13 : -6 - dayOfWeek; // 지난주 월요일로 이동하는 오프셋
+      sundayOffset = dayOfWeek === 0 ? -7 : -1 - dayOfWeek; // 지난주 일요일로 이동하는 오프셋
+      startDay = new Date(today);
+      startDay.setDate(today.getDate() + mondayOffset); // 이번 주 월요일
+      endDay = new Date(today);
+      endDay.setDate(today.getDate() + sundayOffset); // 이번 주 일요일
+    }
+    if(value.id=="thisMonth"){
+      startDay = new Date(year, month, 1); // 이번 달의 첫 번째 날
+      endDay = new Date(year, month + 1, 0); // 이번주 토요일로 이동하는 오프셋
+    }
+    if(value.id=="lastMonth"){
+      startDay = new Date(year, month - 1, 1); // 지난 달의 첫 번째 날
+      endDay = new Date(year, month, 0); // 이번주 토요일로 이동하는 오프셋
+    }
+    if(value.id=="thisYear"){
+      startDay = new Date(year, 0, 1); // 이번 달의 첫 번째 날
+      endDay = new Date(year, 11, 31); // 이번주 토요일로 이동하는 오프셋
+    }
+    elapseDate = []; // 날짜를 저장할 배열 초기화
+    for (let d = new Date(startDay); d <= endDay; d.setDate(d.getDate() + 1)) {
+        elapseDate.push(dateT(d)); // 날짜를 배열에 추가
+    }
+    getList(elapseDate);
+  }

@@ -26,20 +26,35 @@
      <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr">
+        <button class="periodBtn" id="thisWeek" onclick="peroid(this)">이번주</button>
+        <button class="periodBtn" id="lastWeek" onclick="peroid(this)">지난주</button>
+        <button class="periodBtn" id="thisMonth" onclick="peroid(this)">이번달</button>
+        <button class="periodBtn" id="lastMonth" onclick="peroid(this)">지난달</button>
+        <div>
+            <label style="width:100%">날짜지정:
+                <input style="width:100%"type="date" id="entryDate" name="entryDate" required>
+            </label>
+        </div>
+    </div>
     <select id="clientList">ClientList</select>
     <h1>재고 목록</h1>
     <form id="stockForm">
-        <label for="entryDate">입고일:</label>
-        <input type="date" id="entryDate" name="entryDate" required>
-        <label for="item">품목:</label>
-        <input type="text" id="item" name="item" required>
+        
+        <select style="width:15vw;text-align: center;"id="desList" name="item" required>
+                <option >품 명</option>
+        </select>
         <button type="submit">추가</button>
     </form>
     <table>
         <thead>
             <tr>
                 <th>입고일</th>
+                <th>관리번호</th>
                 <th>품목</th>
+                <th>수량(EA)</th>
+                <th>단위(PLT)</th>
+                <th>비고</th>
             </tr>
         </thead>
         <tbody id="stockList">
