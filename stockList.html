@@ -14,7 +14,12 @@
         }
         th, td {
             padding: 8px;
-            text-align: left;
+            text-align: center;
+        }
+        thead th{
+            position:sticky;
+            top:0;
+            background-color: #4a58f5;
         }
     </style>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
@@ -25,7 +30,7 @@
      <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
-<body>
+<body style="display:grid;grid-template-rows:1fr 1fr 10fr;row-gap: 1vh;height:98vh" >
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr">
         <button class="periodBtn" id="thisWeek" onclick="peroid(this)">이번주</button>
         <button class="periodBtn" id="lastWeek" onclick="peroid(this)">지난주</button>
@@ -37,30 +42,29 @@
             </label>
         </div>
     </div>
-    <select id="clientList">ClientList</select>
-    <h1>재고 목록</h1>
-    <form id="stockForm">
-        
-        <select style="width:15vw;text-align: center;"id="desList" name="item" required>
-                <option >품 명</option>
-        </select>
-        <button type="submit">추가</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>입고일</th>
-                <th>관리번호</th>
-                <th>품목</th>
-                <th>수량(EA)</th>
-                <th>단위(PLT)</th>
-                <th>비고</th>
-            </tr>
-        </thead>
-        <tbody id="stockList">
-            <!-- Stock list items will be added here -->
-        </tbody>
-    </table>
+    
+    <div style="display:grid;grid-template-columns: 1fr 1fr;">
+        <h1 style="text-align: center;">재고 목록</h1>
+        <select id="clientList">ClientList</select>
+    </div>
+    <div style="height:100%;overflow-y: scroll;">
+        <table style="height:100%">
+            <thead>
+                <tr>
+                    <th>입고일</th>
+                    <th>관리번호</th>
+                    <th>품목</th>
+                    <th>수량(EA)</th>
+                    <th>단위(PLT)</th>
+                    <th>비고</th>
+                </tr>
+            </thead>
+            <tbody style="border:1px solid black"id="stockList">
+                <!-- Stock list items will be added here -->
+            </tbody>
+        </table>
+    </div>
+    
     <script src="stock.js"></script>
 </body>
 </html>
