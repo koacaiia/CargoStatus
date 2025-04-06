@@ -21,6 +21,10 @@
             top:0;
             background-color: #4a58f5;
         }
+        h1 {
+            font-size: clamp(20px, 100%, 48px); /* 최소 16px, 기본 5vw, 최대 48px */
+            text-align: center;
+        }
     </style>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
      <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
@@ -43,9 +47,20 @@
         </div>
     </div>
     
-    <div style="display:grid;grid-template-columns: 1fr 1fr;">
-        <h1 style="text-align: center;">재고 목록</h1>
-        <select id="clientList">ClientList</select>
+    <div style="display:grid;grid-template-columns: 1.2fr 0.8fr ;">
+        <div style="display:grid;grid-template-columns:1.5fr 1fr 0.5fr">
+            <h1 id="elapsedDate" style="text-align: center;"></h1>
+            <select id="clientList">ClientList</select>
+            <h1 style="text-align: center;">재고 목록</h1>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr">
+                <h1 style="text-align: center;">20FT</h1>
+                <h1 id="cont20" style="text-align: center;"></h1>
+                <h1 style="text-align: center;">40FT</h1>
+                <h1 id="cont40" style="text-align: center;"></h1>
+        </div>
+        
     </div>
     <div style="height:100%;overflow-y: scroll;">
         <table style="height:100%">

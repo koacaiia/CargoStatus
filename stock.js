@@ -53,23 +53,30 @@ dateEle.addEventListener("change",()=>{
 });
 getList(dateEle.value);
 function getList(date,client){
-    console.log(date,client);
+    let cont20=0;
+    let cont40=0;
     cL.replaceChildren();
     tBody.replaceChildren();
-    const op = document.createElement("option");
-          op.value="clientValue";
-          op.text="입고 거래처 목록록";
-          cL.appendChild(op);
+    if(client==undefined){
+      const op = document.createElement("option");
+      op.value="All Client";
+      op.text="거래처 선택";
+      cL.appendChild(op);
+    }
     let cList=[];      
     for(let i=0;i<date.length;i++){
       const month=date[i].substring(5,7);
       const ref ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date[i];
       database_f.ref(ref).on("value",(snapshot)=>{
         const val = snapshot.val();
-        
           for(const key in val){
-            console.log(val[key]["consignee"],client);
             if(client==undefined||client ==val[key]["consignee"]){
+              const cont20Value = val[key]["container20"];
+              const cont40Value = val[key]["container40"];
+              
+              cont20=cont20Value+1;
+              cont40=cont40Value+1;
+              console.log(cont20Value,cont40Value,cont20,cont40);
               const tr = document.createElement("tr");
               for(let i=0;i<tdList.length;i++){
                 const td = document.createElement("td");
@@ -86,14 +93,19 @@ function getList(date,client){
                 cL.appendChild(op1);
               }
             }
-            
+            if(i==date.length-1){
+              console.log("cont20",cont20,"cont40",cont40);
+              document.querySelector("#cont20").innerHTML = cont20;
+                document.querySelector("#cont40").innerHTML = cont40;
+            }
           }
       });
+     
     }
+    
   }
   cL.addEventListener("change",()=>{
     const client = cL.value;
-    console.log(client);
     getList(elapseDate,client);
   });
   function peroid(value){
@@ -138,5 +150,7 @@ function getList(date,client){
     for (let d = new Date(startDay); d <= endDay; d.setDate(d.getDate() + 1)) {
         elapseDate.push(dateT(d)); // 날짜를 배열에 추가
     }
+    document.querySelector("#elapsedDate").innerHTML = elapseDate[0]+" ~ "+elapseDate[elapseDate.length-1];
     getList(elapseDate);
+    
   }
