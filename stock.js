@@ -47,11 +47,11 @@ const tBody = document.querySelector("#stockList");
 const tdList = ["date","bl","description","incargo","Pqty","remark"];
 dateEle.valueAsDate = new Date();
 dateEle.addEventListener("change",()=>{
-  getList(dateEle.value);
   elapseDate =[];
   elapseDate.push(dateEle.value);
+  getList(elapseDate);
+  document.querySelector("#elapsedDate").innerHTML = elapseDate[0];
 });
-getList(dateEle.value);
 function getList(date,client){
     let cont20=0;
     let cont40=0;
@@ -71,11 +71,10 @@ function getList(date,client){
         const val = snapshot.val();
           for(const key in val){
             if(client==undefined||client ==val[key]["consignee"]){
-              const cont20Value = val[key]["container20"];
-              const cont40Value = val[key]["container40"];
-              
-              cont20=cont20Value+1;
-              cont40=cont40Value+1;
+              const cont20Value = parseInt(val[key]["container20"]);
+              const cont40Value = parseInt(val[key]["container40"]);
+              cont20=cont20+cont20Value;
+              cont40=cont40+cont40Value;
               console.log(cont20Value,cont40Value,cont20,cont40);
               const tr = document.createElement("tr");
               for(let i=0;i<tdList.length;i++){
@@ -93,11 +92,11 @@ function getList(date,client){
                 cL.appendChild(op1);
               }
             }
-            if(i==date.length-1){
-              console.log("cont20",cont20,"cont40",cont40);
+            
+          }
+          if(i==date.length-1){
               document.querySelector("#cont20").innerHTML = cont20;
-                document.querySelector("#cont40").innerHTML = cont40;
-            }
+              document.querySelector("#cont40").innerHTML = cont40;
           }
       });
      
