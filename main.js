@@ -841,4 +841,7 @@ function encryptKoreanToNumber(text) {
   }
   return encryptedText;
 }
-// window.location.href = "stockList.html";
+function stockList(){
+  window.location.href = "stockList.html";
+}
+//
