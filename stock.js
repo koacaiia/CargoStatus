@@ -189,6 +189,14 @@ function getList(date,client){
     
   }
   function popUp(){
+    const imageT = document.querySelector("#imageT");
+    let imageSort;
+    imageT.querySelectorAll("button").forEach((e)=>{
+      if(e.classList.contains("imageTableSelected")){
+        imageSort = e.id;
+      }
+    });
+    console.log(imageSort);
     const pDiv = document.querySelector("#periodDiv");
     pDiv.style="display:none";
     const sDiv = document.querySelector("#searchDiv");
@@ -197,7 +205,7 @@ function getList(date,client){
     tDiv.style.height="100%";
     const pop = document.querySelector("#mainPop");
     pop.style="display:grid";
-    pop.style.gridTemplateRows="1fr 1fr";
+    pop.style.gridTemplateRows="2fr 1fr";
     pop.style.border="1px solid black";
     const body = document.querySelector("body");
     body.style.display="grid";
@@ -314,7 +322,13 @@ function getList(date,client){
   imgRef[3]=dateArr;
   imgRef[2]=io;
   imgRef.splice(4,1);
-  imgRef=imgRef.toString().replaceAll(",","/")+"/";
+  if(imageSort=="ioBtn"){
+    imgRef=imgRef.toString().replaceAll(",","/")+"/";
+  }else if(imageSort=="sampleBtn"){
+    imgRef=imgRef.toString().replaceAll(",","/")+"/sample/";
+  }else if(imageSort=="damageBtn"){
+    imgRef=imgRef.toString().replaceAll(",","/")+"/damage/";
+  }
   console.log(imgRef);
   refFile=imgRef;
   storage_f.ref(imgRef).listAll().then((res)=>{
@@ -350,11 +364,206 @@ function getList(date,client){
   });
 };
 function popClose(){
-    document.querySelector("#mainTitle").style="display:grid";
-    document.querySelector("#mainPop").style="display:none";
-    document.querySelector("#mainContent").style="display:grid";
-    document.querySelectorAll(".clicked").forEach((e)=>{
-        e.classList.remove("clicked");
-    });
-    // document.querySelector("#mainOut").style="display:block";
+  location.href="https://koacaiia.github.io/CargoStatus/stockList.html";
+    
 }
+function imageSelect(target){
+  const tableSort = document.querySelector("#imageT");
+  tableSort.querySelectorAll("button").forEach((e)=>{
+    e.className="";    
+  })
+  target.classList.toggle("imageTableSelected");
+  popUp();
+}
+function popReg(){
+  const fileInput = document.querySelector("#fileInput");
+  
+  let imgUrls = [];
+  // const forTd = fileTr.querySelectorAll("td");
+  const img = fileTr.querySelectorAll(".local-img");
+  console.log(img);
+  if(img.length==0){
+    toastOn("사진 전송 없이 작업 완료 등록만 진행 합니다.");
+        }else{
+          for(let i=0;i<img.length;i++){
+            console.log(img[i].src);
+            const imgSrc = img[i].src;
+            imgUrls.push(imgSrc);
+          }
+          const storageRef = storage_f.ref(refFile);
+          console.log(imgUrls);
+  imgUrls.forEach((imgUrl, index) => {
+    fetch(imgUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            // const fileName = imgUrl.split('/').pop(); // Extract file name from URL
+            const selectTr = document.querySelector(".clicked");
+            const fileName = selectTr.cells[0].innerHTML+"_"+selectTr.cells[2].innerHTML+"_"+selectTr.cells[3].innerHTML+"_"+selectTr.cells[4].innerHTML+"_"+index+"_"+returnTime();
+            const file = new File([blob], fileName, { type: blob.type });
+            const fileRef = storageRef.child(fileName.replace("/","_"));
+            fileRef.put(file).then((snapshot) => {
+                if (index === imgUrls.length - 1) {
+                    // alert(imgUrls.length+" 개 Images업로드 완료");
+                    console.log("업로드 완료");
+                    fileTr.replaceChildren();
+                    let imgRef=ref.replace("DeptName","images").replaceAll("/",",");
+                    // imgRef.replace("/",",");
+                    imgRef = imgRef.split(",");
+                    const io=imgRef[4];
+                    const dateArr = imgRef[2];
+                    imgRef[3]=dateArr;
+                    imgRef[2]=io;
+                    imgRef.splice(4,1);
+                    imgRef=imgRef.toString().replaceAll(",","/")+"/";
+                    console.log(imgRef);
+                    refFile=imgRef;
+                    storage_f.ref(imgRef).listAll().then((res)=>{
+                      res.items.forEach((itemRef)=>{
+                        itemRef.getDownloadURL().then((url)=>{
+                          const td = document.createElement("td");
+                          const img = document.createElement("img");
+                          img.src=url;
+                          img.className="server-img";
+                          img.addEventListener("click", (e) => {
+                            img.parentNode.classList.toggle("file-selected");
+                          });
+                          img.style.display="block";
+                          td.style.width="32.5vw";
+                          td.style.height="50vh";
+                          img.style.width="100%";
+                          img.style.height="100%";
+                          img.style.objectFit = "cover"; // Ensures the image covers the container without distortion
+                  
+                          // Create a container div to center the image
+                          const imgContainer = document.createElement("div");
+                          imgContainer.style.display = "flex";
+                          imgContainer.style.justifyContent = "center";
+                          imgContainer.style.alignItems = "center";
+                          imgContainer.style.width = "100%";
+                          imgContainer.style.height = "100%";
+                          imgContainer.style.position = "relative";
+                          imgContainer.appendChild(img);
+                          td.appendChild(imgContainer);
+                          fileTr.appendChild(td);
+                        });
+                      });
+                    });
+                    // popClose();
+                }
+            });
+        })
+        .catch(error => {
+          alert("Error uploading file:", error);
+          console.error("Error uploading file:", error);
+      });
+    });
+    toastOn(imgUrls.length+" 파일 업로드 완료");
+        }
+  let w;
+  if(ioValue=="InCargo"){
+    w={"working":"컨테이너진입"}
+  }else{
+    w={"workprocess":"완"}
+  }
+  database_f.ref(ref).update(w);
+}
+const handleImgInput = (e) => {
+  const fileTr=document.getElementById("imgTr")
+  fileTr.replaceChildren();
+  upfileList = e.target.files;
+  for(let i=0;i<e.target.files.length;i++){
+  const config = {
+    file: e.target.files[i],
+    maxSize: 1500,
+  };
+  const imgTag = document.createElement("td");
+  const resizeImage = (settings) => {
+    const file = settings.file;
+    const maxSize = settings.maxSize;
+    const reader = new FileReader();
+    const image = new Image();
+    const canvas = document.createElement("canvas");
+  
+    const dataURItoBlob = (dataURI) => {
+      const bytes =
+        dataURI.split(",")[0].indexOf("base64") >= 0
+          ? atob(dataURI.split(",")[1])
+          : unescape(dataURI.split(",")[1]);
+      const mime = dataURI.split(",")[0].split(":")[1].split(";")[0];
+      const max = bytes.length;
+      const ia = new Uint8Array(max);
+      for (let i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
+      return new Blob([ia], { type: mime });
+    };
+  
+    const resize = () => {
+      let width = image.width;
+      let height = image.height;
+      if (width > height) {
+        if (width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        }
+      } else {
+        if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(image, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL("image/jpeg");
+      return dataURItoBlob(dataUrl);
+    };
+  
+    return new Promise((ok, no) => {
+      if (!file) {
+        return;
+      }
+      if (!file.type.match(/image.*/)) {
+        no(new Error("Not an image"));
+        return;
+      }
+      reader.onload = (readerEvent) => {
+        image.onload = () => {
+          return ok(resize());
+        };
+        image.src = readerEvent.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  resizeImage(config)
+    .then((resizedImage) => {
+      const url = window.URL.createObjectURL(resizedImage);
+      const img = document.createElement("img");
+      img.className = "local-img"
+      img.addEventListener("click", (e) => {
+        const tdList = img.parentNode.parentNode.querySelectorAll("td");
+        tdList.forEach((td)=>{
+            td.classList.remove("file-selected");
+        });
+        img.parentNode.classList.toggle("file-selected");
+        console.log(img.parentNode.classList);
+        showModal(url,imgTag)
+      });
+      img.setAttribute("src", url);
+      img.style.display = "block";
+      imgTag.style.width="32.5vw";
+      imgTag.style.height="36vh";
+      img.style.width="100%";
+      img.style.height="100%";
+      img.style.objectFit = "scale-down"; // Ensures the image covers the container without distortion
+
+      imgTag.appendChild(img);
+      fileTr.appendChild(imgTag);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+  // document.querySelector(".upload-name").value=document.querySelector("#fileInput").value;
+};
+document.querySelector("#fileInput").addEventListener("change",handleImgInput);

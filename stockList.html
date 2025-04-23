@@ -40,6 +40,42 @@
             width: 100%;
             table-layout: fixed; /* 열 너비 고정 */
         }
+        .imageTableSelected{
+            background-color: #1f054e;
+            color: rgb(250, 249, 252);
+        }
+        .filebox label {
+            display: flex;
+            /* padding: 10px 10px; */
+            /* margin:0; */
+            color: #fff;
+            /* line-height: 9vh; */
+            background-color: #1713dd;
+            margin-left: 10%;
+            margin-right: 10%;
+            margin-bottom:4%;
+            height:80%;
+            /* cursor: pointer; */
+            /* height: 2; */
+            /* width:80%;
+            height:75%; */
+            /* height:10vh; */
+            /* line-height:3; */
+            /* text-align: center; */
+            justify-content: center;
+            align-items:center;
+            font-size:larger;
+            font-weight: bold;
+            border-radius: 15px;
+        }
+        .filebox input[type="file"] {
+            position: absolute;
+            width: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+            border: 0;
+        }
     </style>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
      <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
@@ -91,7 +127,7 @@
         </table>
     </div>
     <div id="mainPop" style="display:none">
-        <div id="imgTableDiv">
+        <div id="imgTableDiv" style="overflow-x: scroll;">
                     <table id="popImgTable" style="width:100%;height:100%;border:1px solid black;overflow-y: scroll;">
                         <tbody id="popImgTableTbody">
                             <tr id="imgTr" style="height:50vh">
@@ -100,9 +136,21 @@
                         </tbody>
                     </table>
         </div>
-        <div id="popBtn" style="display:grid;grid-template-columns:1fr 1fr;margin-top: 3vh;" >
-                            <button id="btnClose" style="font-weight: bold;font-size:large;"onclick="popClose()">닫기(목록으로)</button>
-                            <button id="btnReport " style="font-weight: bold;font-size:large;"onclick="popSaveAll()">사진 전체저장</button>
+        <div id="popBtn" style="display:grid;grid-template-rows:1fr 3fr fr;margin-top: 3vh;" >
+            <div id="imageT"style="display:grid;grid-template-columns:1fr 1fr 1fr ;column-gap:1vw">
+                <button class="imageTableSelected"id="ioBtn" style="font-weight: bold;font-size:large;"onclick="imageSelect(this)">입,출고</button>
+                <button id="sampleBtn" style="font-weight: bold;font-size:large;"onclick="imageSelect(this)">검채</button>
+                <button id="damageBtn" style="font-weight: bold;font-size:large;"onclick="imageSelect(this)">파손</button>
+            </div>
+            <div class="filebox" style="display:grid;grid-template-rows:1fr 1fr ;row-gap:1vw">
+                <label >파일찾기
+                     <input type="file" id="fileInput" multiple accept="image/*"  >
+                </label> 
+                <div style="display:grid;grid-template-columns:1fr 1fr ;column-gap:1vw">
+                    <button id="btnClose" style="font-weight: bold;font-size:large;"onclick="popClose()">닫기(목록으로)</button>
+                    <button id="btnReport " style="font-weight: bold;font-size:large;"onclick="popSaveAll()">사진 전체저장</button>    
+                </div>
+            </div>           
         </div>
     </div>
     
