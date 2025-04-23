@@ -69,13 +69,13 @@ function getList(date,client){
       const ref ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date[i];
       database_f.ref(ref).on("value",(snapshot)=>{
         const val = snapshot.val();
+        
           for(const key in val){
             if(client==undefined||client ==val[key]["consignee"]){
               const cont20Value = parseInt(val[key]["container20"]);
               const cont40Value = parseInt(val[key]["container40"]);
               cont20=cont20+cont20Value;
               cont40=cont40+cont40Value;
-              console.log(cont20Value,cont40Value,cont20,cont40);
               const tr = document.createElement("tr");
               for(let i=0;i<tdList.length;i++){
                 const td = document.createElement("td");
@@ -83,6 +83,42 @@ function getList(date,client){
                 tr.appendChild(td);
               }
               tr.setAttribute("id",val[key]["refValue"]);
+              tr.classList.add("stockTr");
+              tr.addEventListener("click",(e)=>{
+                const target = e.target.parentNode;                
+                target.classList.toggle("selected");
+                const trList = document.querySelectorAll(".stockTr");
+                trList.forEach((tr)=>{
+                  if(!tr.classList.contains("selected")){
+                    tr.style.display = "none";
+                    // if(tr.id=="imgTr"){
+                    //   tr.style.display = "block";
+                    //   }
+                    // const refValue = tr.id;
+                    // const ref = "DeptName/"+deptName+"/InCargo/"+month+"월/"+date[i]+"/"+refValue;
+                    // database_f.ref(ref).on("value",(snapshot)=>{
+                    //   const val = snapshot.val();
+                    //   desEle.innerHTML=val["description"];
+                    //   const storageRef = storage_f.ref(deptName+"/"+month+"월/"+date[i]+"/"+refValue);
+                    //   storageRef.listAll().then((res)=>{
+                    //     res.items.forEach((itemRef)=>{
+                    //       const li = document.createElement("li");
+                    //       li.innerHTML=itemRef.name;
+                    //       li.addEventListener("click",(e)=>{
+                    //         const filePath = deptName+"/"+month+"월/"+date[i]+"/"+refValue+"/"+e.target.innerHTML;
+                    //         storage_f.ref(filePath).getDownloadURL().then((url)=>{
+                    //           window.open(url);
+                    //         });
+                    //       });
+                    //       desEle.appendChild(li);
+                    //     });
+                    //   });
+                    // });
+                    
+                  }
+                });
+                popUp();
+                });
               tBody.appendChild(tr);
               if(!cList.includes(val[key]["consignee"])){
                 cList.push(val[key]["consignee"]);
@@ -108,7 +144,6 @@ function getList(date,client){
     getList(elapseDate,client);
   });
   function peroid(value){
-    console.log(value.id);
     const today = new Date(); // 현재 날짜
     const dayOfWeek = today.getDay(); // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
     let mondayOffset; 
@@ -153,3 +188,173 @@ function getList(date,client){
     getList(elapseDate);
     
   }
+  function popUp(){
+    const pDiv = document.querySelector("#periodDiv");
+    pDiv.style="display:none";
+    const sDiv = document.querySelector("#searchDiv");
+    sDiv.style="display:none";
+    const tDiv = document.querySelector("#tableDiv");
+    tDiv.style.height="100%";
+    const pop = document.querySelector("#mainPop");
+    pop.style="display:grid";
+    pop.style.gridTemplateRows="1fr 1fr";
+    pop.style.border="1px solid black";
+    const body = document.querySelector("body");
+    body.style.display="grid";
+    body.style.gridTemplateRows="10vh 85vh";
+    const fileTr = document.querySelector("#imgTr");
+    fileTr.replaceChildren();
+    const resizeImage = (settings) => {
+    const file = settings.file;
+    const maxSize = settings.maxSize;
+    const reader = new FileReader();
+    const image = new Image();
+    const canvas = document.createElement("canvas");
+  
+    const dataURItoBlob = (dataURI) => {
+      const bytes =
+        dataURI.split(",")[0].indexOf("base64") >= 0
+          ? atob(dataURI.split(",")[1])
+          : unescape(dataURI.split(",")[1]);
+      const mime = dataURI.split(",")[0].split(":")[1].split(";")[0];
+      const max = bytes.length;
+      const ia = new Uint8Array(max);
+      for (let i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
+      return new Blob([ia], { type: mime });
+    };
+  
+    const resize = () => {
+      let width = image.width;
+      let height = image.height;
+      if (width > height) {
+        if (width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        }
+      } else {
+        if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(image, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL("image/jpeg");
+      return dataURItoBlob(dataUrl);
+    };
+  
+    return new Promise((ok, no) => {
+      if (!file) {
+        return;
+      }
+      if (!file.type.match(/image.*/)) {
+        no(new Error("Not an image"));
+        return;
+      }
+      reader.onload = (readerEvent) => {
+        image.onload = () => {
+          return ok(resize());
+        };
+        image.src = readerEvent.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImgInput = (e) => {
+    fileTr.replaceChildren();
+    upfileList = e.target.files;
+    for(let i=0;i<e.target.files.length;i++){
+    const config = {
+      file: e.target.files[i],
+      maxSize: 1500,
+    };
+    const imgTag = document.createElement("td");
+    resizeImage(config)
+      .then((resizedImage) => {
+        const url = window.URL.createObjectURL(resizedImage);
+        const img = document.createElement("img");
+        img.className = "local-img"
+        img.addEventListener("click", (e) => {
+          img.parentNode.classList.toggle("file-selected");
+          showModal(url,imgTag)
+        });
+        img.setAttribute("src", url);
+        img.style.display = "block";
+        imgTag.style.width="32.5vw";
+        imgTag.style.height="29vh";
+        img.style.width="100%";
+        img.style.height="100%";
+
+        imgTag.appendChild(img);
+        fileTr.appendChild(imgTag);
+      })
+      .then(() => {
+        // const img = document.querySelector(".profile-img");
+        // img.onload = () => {
+        //   const widthDiff = (img.clientWidth - imgTag.offsetWidth);
+        //   console.log(img.clientHeight,imgTag.offsetHeight);
+        //   const heightDiff = (img.clientHeight - imgTag.offsetHeight) ;
+        //   img.style.transform = `translate( -${widthDiff}px , -${heightDiff}px)`;
+        // };
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+    // document.querySelector(".upload-name").value=document.querySelector("#fileInput").value;
+  };
+  fileTr.replaceChildren();
+  const ref = document.querySelector(".selected").id;
+  let imgRef=ref.replace("DeptName","images").replaceAll("/",",");
+  imgRef = imgRef.split(",");
+  const io=imgRef[4];
+  const dateArr = imgRef[2];
+  imgRef[3]=dateArr;
+  imgRef[2]=io;
+  imgRef.splice(4,1);
+  imgRef=imgRef.toString().replaceAll(",","/")+"/";
+  console.log(imgRef);
+  refFile=imgRef;
+  storage_f.ref(imgRef).listAll().then((res)=>{
+    res.items.forEach((itemRef)=>{
+      itemRef.getDownloadURL().then((url)=>{
+        const td = document.createElement("td");
+        const img = document.createElement("img");
+        img.src=url;
+        img.className="server-img";
+        img.addEventListener("click", (e) => {
+          img.parentNode.classList.toggle("file-selected");
+          showModal(url,itemRef.name)
+        });
+        img.style.display="block";
+        td.style.width="32.5vw";
+        td.style.height="50vh";
+        img.style.width="100%";
+        img.style.height="100%";
+        img.style.objectFit = "scale-down"; // Ensures the image covers the container without distortion
+        // Create a container div to center the image
+        // const imgContainer = document.createElement("div");
+        // imgContainer.style.display = "flex";
+        // imgContainer.style.justifyContent = "center";
+        // imgContainer.style.alignItems = "center";
+        // imgContainer.style.width = "100%";
+        // imgContainer.style.height = "29vh";
+        // imgContainer.style.position = "relative";
+        // imgContainer.appendChild(img);
+        td.appendChild(img);
+        fileTr.appendChild(td);
+      });
+    });
+  });
+};
+function popClose(){
+    document.querySelector("#mainTitle").style="display:grid";
+    document.querySelector("#mainPop").style="display:none";
+    document.querySelector("#mainContent").style="display:grid";
+    document.querySelectorAll(".clicked").forEach((e)=>{
+        e.classList.remove("clicked");
+    });
+    // document.querySelector("#mainOut").style="display:block";
+}
