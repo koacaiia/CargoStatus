@@ -200,6 +200,7 @@ function getData(date){
     
 }
 function popUp(){
+    refFile="";
     const mainTitle = document.querySelector("#mainTitle");
     mainTitle.style="display:none";
     const mainContent = document.querySelector("#mainContent");

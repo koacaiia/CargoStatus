@@ -136,16 +136,22 @@
                         </tbody>
                     </table>
         </div>
-        <div id="popBtn" style="display:grid;grid-template-rows:1fr 3fr fr;margin-top: 3vh;" >
+        <div id="popBtn" style="display:grid;grid-template-rows:1fr 3fr;margin-top: 3vh;" >
             <div id="imageT"style="display:grid;grid-template-columns:1fr 1fr 1fr ;column-gap:1vw">
                 <button class="imageTableSelected"id="ioBtn" style="font-weight: bold;font-size:large;"onclick="imageSelect(this)">입,출고</button>
                 <button id="sampleBtn" style="font-weight: bold;font-size:large;"onclick="imageSelect(this)">검채</button>
                 <button id="damageBtn" style="font-weight: bold;font-size:large;"onclick="imageSelect(this)">파손</button>
             </div>
-            <div class="filebox" style="display:grid;grid-template-rows:1fr 1fr ;row-gap:1vw">
-                <label >파일찾기
-                     <input type="file" id="fileInput" multiple accept="image/*"  >
-                </label> 
+            <div  style="display:grid;grid-template-rows:1fr 1fr ;row-gap:1vw">
+                <div class="filebox" style="display:grid;grid-template-columns:1fr 1fr ;column-gap:1vw">
+                    <label >파일찾기
+                        <input type="file" id="fileInput" multiple accept="image/*"  >
+                    </label> 
+                    <label for="btnUpLoad" >사진등록
+                        <button id="btnUpLoad" style="display:none" onclick="upLoad()"></button>
+                    </label>
+                </div>
+                
                 <div style="display:grid;grid-template-columns:1fr 1fr ;column-gap:1vw">
                     <button id="btnClose" style="font-weight: bold;font-size:large;"onclick="popClose()">닫기(목록으로)</button>
                     <button id="btnReport " style="font-weight: bold;font-size:large;"onclick="popSaveAll()">사진 전체저장</button>    
