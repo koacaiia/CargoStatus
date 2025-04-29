@@ -189,6 +189,7 @@ function getList(date,client){
     getList(elapseDate);
     
   }
+  const fileTr = document.querySelector("#imgTr");
   function popUp(){
     refFile="";
     const imageT = document.querySelector("#imageT");
@@ -198,7 +199,7 @@ function getList(date,client){
         imageSort = e.id;
       }
     });
-    console.log(imageSort);
+
     const pDiv = document.querySelector("#periodDiv");
     pDiv.style="display:none";
     const sDiv = document.querySelector("#searchDiv");
@@ -212,110 +213,8 @@ function getList(date,client){
     const body = document.querySelector("body");
     body.style.display="grid";
     body.style.gridTemplateRows="10vh 85vh";
-    const fileTr = document.querySelector("#imgTr");
+    
     fileTr.replaceChildren();
-    const resizeImage = (settings) => {
-    const file = settings.file;
-    const maxSize = settings.maxSize;
-    const reader = new FileReader();
-    const image = new Image();
-    const canvas = document.createElement("canvas");
-  
-    const dataURItoBlob = (dataURI) => {
-      const bytes =
-        dataURI.split(",")[0].indexOf("base64") >= 0
-          ? atob(dataURI.split(",")[1])
-          : unescape(dataURI.split(",")[1]);
-      const mime = dataURI.split(",")[0].split(":")[1].split(";")[0];
-      const max = bytes.length;
-      const ia = new Uint8Array(max);
-      for (let i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
-      return new Blob([ia], { type: mime });
-    };
-  
-    const resize = () => {
-      let width = image.width;
-      let height = image.height;
-      if (width > height) {
-        if (width > maxSize) {
-          height *= maxSize / width;
-          width = maxSize;
-        }
-      } else {
-        if (height > maxSize) {
-          width *= maxSize / height;
-          height = maxSize;
-        }
-      }
-      canvas.width = width;
-      canvas.height = height;
-      canvas.getContext("2d").drawImage(image, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL("image/jpeg");
-      return dataURItoBlob(dataUrl);
-    };
-  
-    return new Promise((ok, no) => {
-      if (!file) {
-        return;
-      }
-      if (!file.type.match(/image.*/)) {
-        no(new Error("Not an image"));
-        return;
-      }
-      reader.onload = (readerEvent) => {
-        image.onload = () => {
-          return ok(resize());
-        };
-        image.src = readerEvent.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleImgInput = (e) => {
-    fileTr.replaceChildren();
-    upfileList = e.target.files;
-    for(let i=0;i<e.target.files.length;i++){
-    const config = {
-      file: e.target.files[i],
-      maxSize: 1500,
-    };
-    const imgTag = document.createElement("td");
-    resizeImage(config)
-      .then((resizedImage) => {
-        const url = window.URL.createObjectURL(resizedImage);
-        const img = document.createElement("img");
-        img.className = "local-img"
-        img.addEventListener("click", (e) => {
-          img.parentNode.classList.toggle("file-selected");
-          showModal(url,imgTag)
-        });
-        img.setAttribute("src", url);
-        img.style.display = "block";
-        imgTag.style.width="32.5vw";
-        imgTag.style.height="29vh";
-        img.style.width="100%";
-        img.style.height="100%";
-
-        imgTag.appendChild(img);
-        fileTr.appendChild(imgTag);
-      })
-      .then(() => {
-        // const img = document.querySelector(".profile-img");
-        // img.onload = () => {
-        //   const widthDiff = (img.clientWidth - imgTag.offsetWidth);
-        //   console.log(img.clientHeight,imgTag.offsetHeight);
-        //   const heightDiff = (img.clientHeight - imgTag.offsetHeight) ;
-        //   img.style.transform = `translate( -${widthDiff}px , -${heightDiff}px)`;
-        // };
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    }
-    // document.querySelector(".upload-name").value=document.querySelector("#fileInput").value;
-  };
-  fileTr.replaceChildren();
   const ref = document.querySelector(".selected").id;
   let imgRef=ref.replace("DeptName","images").replaceAll("/",",");
   imgRef = imgRef.split(",");
@@ -323,7 +222,7 @@ function getList(date,client){
   const dateArr = imgRef[2];
   imgRef[3]=dateArr;
   imgRef[2]=io;
-  imgRef.slice(4,1);
+  imgRef.splice(4,1);
   if(imageSort=="ioBtn"){
     imgRef=imgRef.toString().replaceAll(",","/")+"/";
   }else if(imageSort=="sampleBtn"){
@@ -331,14 +230,17 @@ function getList(date,client){
   }else if(imageSort=="damageBtn"){
     imgRef=imgRef.toString().replaceAll(",","/")+"/damage/";
   }
+  console.log(imageSort,imgRef)
   refFile=imgRef;
   storage_f.ref(imgRef).listAll().then((res)=>{
+    console.log(res)
     res.items.forEach((itemRef)=>{
       itemRef.getDownloadURL().then((url)=>{
         const td = document.createElement("td");
         const img = document.createElement("img");
         img.src=url;
         img.className="server-img";
+        console.log(url)
         img.addEventListener("click", (e) => {
           img.parentNode.classList.toggle("file-selected");
           showModal(url,itemRef.name)
@@ -348,21 +250,12 @@ function getList(date,client){
         td.style.height="50vh";
         img.style.width="100%";
         img.style.height="100%";
-        img.style.objectFit = "scale-down"; // Ensures the image covers the container without distortion
-        // Create a container div to center the image
-        // const imgContainer = document.createElement("div");
-        // imgContainer.style.display = "flex";
-        // imgContainer.style.justifyContent = "center";
-        // imgContainer.style.alignItems = "center";
-        // imgContainer.style.width = "100%";
-        // imgContainer.style.height = "29vh";
-        // imgContainer.style.position = "relative";
-        // imgContainer.appendChild(img);
+        img.style.objectFit = "scale-down"; 
         td.appendChild(img);
         fileTr.appendChild(td);
       });
     });
-  });
+  }).catch((e)=>{console.log(e)});
 };
 function popClose(){
   location.href="https://koacaiia.github.io/CargoStatus/stockList.html";
