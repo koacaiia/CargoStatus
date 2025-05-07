@@ -230,17 +230,14 @@ function getList(date,client){
   }else if(imageSort=="damageBtn"){
     imgRef=imgRef.toString().replaceAll(",","/")+"/damage/";
   }
-  console.log(imageSort,imgRef)
   refFile=imgRef;
   storage_f.ref(imgRef).listAll().then((res)=>{
-    console.log(res)
     res.items.forEach((itemRef)=>{
       itemRef.getDownloadURL().then((url)=>{
         const td = document.createElement("td");
         const img = document.createElement("img");
         img.src=url;
         img.className="server-img";
-        console.log(url)
         img.addEventListener("click", (e) => {
           img.parentNode.classList.toggle("file-selected");
           showModal(url,itemRef.name)
@@ -370,6 +367,27 @@ const handleImgInput = (e) => {
   // document.querySelector(".upload-name").value=document.querySelector("#fileInput").value;
 };
 document.querySelector("#fileInput").addEventListener("change",handleImgInput);
+function returnTime(){
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+  return formattedTime;
+}
+function toastOn(msg,t){
+  if(t == null){
+    t=2000;
+  }
+  const toastMessage = document.createElement("div");
+  toastMessage.id="tost_message";
+  toastMessage.innerHTML = msg; 
+  toastMessage.classList.add('active');
+  document.body.appendChild(toastMessage);
+  setTimeout(function(){
+      toastMessage.classList.remove('active');
+  },t);
+}
 function upLoad(){
   let imageTcondition;
   let imageSort;
@@ -389,13 +407,13 @@ function upLoad(){
     confirm(selectC+" 의 내용으로 서버에 저장 됩니다.")
   }
   
-  if(imageSort=="ioBtn"){
-    refFile=refFile.toString().replaceAll(",","/")+"/";
-  }else if(imageSort=="sampleBtn"){
-    refFile=refFile.toString().replaceAll(",","/")+"/sample/";
-  }else if(imageSort=="damageBtn"){
-    refFile=refFile.toString().replaceAll(",","/")+"/damage/";
-  }
+  // if(imageSort=="ioBtn"){
+  //   refFile=refFile.toString().replaceAll(",","/")+"/";
+  // }else if(imageSort=="sampleBtn"){
+  //   refFile=refFile.toString().replaceAll(",","/")+"/sample/";
+  // }else if(imageSort=="damageBtn"){
+  //   refFile=refFile.toString().replaceAll(",","/")+"/damage/";
+  // }
   let imgUrls = [];
   const img = fileTr.querySelectorAll(".local-img");
   if(img.length==0){
@@ -421,7 +439,7 @@ function upLoad(){
                     // alert(imgUrls.length+" 개 Images업로드 완료");
                     console.log("업로드 완료");
                     fileTr.replaceChildren();
-                    let imgRef=ref.replace("DeptName","images").replaceAll("/",",");
+                    let imgRef=refFile.replace("DeptName","images").replaceAll("/",",");
                     // imgRef.replace("/",",");
                     imgRef = imgRef.split(",");
                     const io=imgRef[4];
