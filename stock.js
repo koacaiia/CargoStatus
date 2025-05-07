@@ -206,13 +206,13 @@ function getList(date,client){
     sDiv.style="display:none";
     const tDiv = document.querySelector("#tableDiv");
     tDiv.style.height="100%";
+    tableDiv.style="border:1px solid black;border-radius:10px";
     const pop = document.querySelector("#mainPop");
     pop.style="display:grid";
-    pop.style.gridTemplateRows="2fr 1fr";
-    pop.style.border="1px solid black";
+    pop.style.gridTemplateRows="2.5fr 1.5fr";
     const body = document.querySelector("body");
     body.style.display="grid";
-    body.style.gridTemplateRows="10vh 85vh";
+    body.style.gridTemplateRows="14vh 81vh";
     
     fileTr.replaceChildren();
   const ref = document.querySelector(".selected").id;
