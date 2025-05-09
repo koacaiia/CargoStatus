@@ -16,6 +16,10 @@ const doc =document.documentElement;
 function fullScreen(){
   doc.requestFullscreen();
 }
+const logIn =localStorage.getItem("logData");
+// if(logIn == null){
+//   ("로그인 후 사용 가능합니다.");
+//   }
 const dateT = (d)=>{
   let result_date;
   try{
@@ -40,7 +44,8 @@ const messaging = firebase.messaging();
 const storage_f = firebase.storage();
 const deptName = "WareHouseDept2";
 let elapseDate;
-let refFile;
+let imgRef;
+let dataRef;
 const cL = document.querySelector("#clientList");
 const dateEle = document.querySelector("#entryDate");
 const desEle = document.querySelector("#desList");
@@ -92,30 +97,6 @@ function getList(date,client){
                 trList.forEach((tr)=>{
                   if(!tr.classList.contains("selected")){
                     tr.style.display = "none";
-                    // if(tr.id=="imgTr"){
-                    //   tr.style.display = "block";
-                    //   }
-                    // const refValue = tr.id;
-                    // const ref = "DeptName/"+deptName+"/InCargo/"+month+"월/"+date[i]+"/"+refValue;
-                    // database_f.ref(ref).on("value",(snapshot)=>{
-                    //   const val = snapshot.val();
-                    //   desEle.innerHTML=val["description"];
-                    //   const storageRef = storage_f.ref(deptName+"/"+month+"월/"+date[i]+"/"+refValue);
-                    //   storageRef.listAll().then((res)=>{
-                    //     res.items.forEach((itemRef)=>{
-                    //       const li = document.createElement("li");
-                    //       li.innerHTML=itemRef.name;
-                    //       li.addEventListener("click",(e)=>{
-                    //         const filePath = deptName+"/"+month+"월/"+date[i]+"/"+refValue+"/"+e.target.innerHTML;
-                    //         storage_f.ref(filePath).getDownloadURL().then((url)=>{
-                    //           window.open(url);
-                    //         });
-                    //       });
-                    //       desEle.appendChild(li);
-                    //     });
-                    //   });
-                    // });
-                    
                   }
                 });
                 popUp();
@@ -215,8 +196,8 @@ function getList(date,client){
     body.style.gridTemplateRows="14vh 81vh";
     
     fileTr.replaceChildren();
-  const ref = document.querySelector(".selected").id;
-  let imgRef=ref.replace("DeptName","images").replaceAll("/",",");
+  dataRef = document.querySelector(".selected").id;
+  imgRef=dataRef.replace("DeptName","images").replaceAll("/",",");
   imgRef = imgRef.split(",");
   const io=imgRef[4];
   const dateArr = imgRef[2];
@@ -230,7 +211,6 @@ function getList(date,client){
   }else if(imageSort=="damageBtn"){
     imgRef=imgRef.toString().replaceAll(",","/")+"/damage/";
   }
-  refFile=imgRef;
   storage_f.ref(imgRef).listAll().then((res)=>{
     res.items.forEach((itemRef)=>{
       itemRef.getDownloadURL().then((url)=>{
@@ -389,46 +369,45 @@ function toastOn(msg,t){
   },t);
 }
 function upLoad(){
+  // console.log(dataRef);
   let imageTcondition;
-  let imageSort;
-    imageT.querySelectorAll("button").forEach((e)=>{
-      if(e.classList.contains("imageTableSelected")){
-        imageSort = e.id;
-      }
-    });
+  // let imageSort;
+  //   imageT.querySelectorAll("button").forEach((e)=>{
+  //     if(e.classList.contains("imageTableSelected")){
+  //       imageSort = e.id;
+  //     }
+  //   });
   const selectT=document.querySelector("#imageT");
   selectT.querySelectorAll("button").forEach((e)=>{
     if(e.classList.contains("imageTableSelected")){
       imageTcondition = e.innerHTML;
     }
   });
-  const selectC = prompt(imageTcondition +"추가 확인사항을 입력 하세요.",imageTcondition);
+  const selectC = prompt(imageTcondition +"추가 확인사항을 입력 하세요.",imageTcondition+"("+dateT(new  Date())+"_"+returnTime()+"|"+logIn+")");
   if(selectC){
-    confirm(selectC+" 의 내용으로 서버에 저장 됩니다.")
-  }
-  
-  // if(imageSort=="ioBtn"){
-  //   refFile=refFile.toString().replaceAll(",","/")+"/";
-  // }else if(imageSort=="sampleBtn"){
-  //   refFile=refFile.toString().replaceAll(",","/")+"/sample/";
-  // }else if(imageSort=="damageBtn"){
-  //   refFile=refFile.toString().replaceAll(",","/")+"/damage/";
-  // }
-  let imgUrls = [];
-  const img = fileTr.querySelectorAll(".local-img");
-  if(img.length==0){
-    toastOn("사진 전송 없이 작업 완료 등록만 진행 합니다.");
-        }else{
-          for(let i=0;i<img.length;i++){
-            const imgSrc = img[i].src;
-            imgUrls.push(imgSrc);
-          }
-          const storageRef = storage_f.ref(refFile);
-          
-  imgUrls.forEach((imgUrl, index) => {
-    fetch(imgUrl)
-        .then(response => response.blob())
-        .then(blob => {
+    const upLoadData=confirm(selectC+" 의 내용으로 서버에 저장 됩니다.");
+    if(upLoadData){
+      const upLoadHistory={history:selectC+","};
+      database_f.ref(dataRef).update(upLoadHistory).then(()=>{
+        console.log("업로드 완료");
+      }).catch((e)=>{
+        console.log(e);
+      });
+      let imgUrls = [];
+        const img = fileTr.querySelectorAll(".local-img");
+        if(img.length==0){
+          toastOn("사진 전송 없이 작업 완료 등록만 진행 합니다.");
+              }else{
+                for(let i=0;i<img.length;i++){
+                  const imgSrc = img[i].src;
+                  imgUrls.push(imgSrc);
+                }
+                const storageRef = storage_f.ref(imgRef);
+                
+        imgUrls.forEach((imgUrl, index) => {
+          fetch(imgUrl)
+              .then(response => response.blob())
+              .then(blob => {
             // const fileName = imgUrl.split('/').pop(); // Extract file name from URL
             const selectTr = document.querySelector(".clicked");
             const fileName = returnTime()+index;
@@ -437,19 +416,18 @@ function upLoad(){
             fileRef.put(file).then((snapshot) => {
                 if (index === imgUrls.length - 1) {
                     // alert(imgUrls.length+" 개 Images업로드 완료");
-                    console.log("업로드 완료");
                     fileTr.replaceChildren();
-                    let imgRef=refFile.replace("DeptName","images").replaceAll("/",",");
+                    console.log("imgRef",imgRef);
+                    // imgRef=imgRef.replace("DeptName","images").replaceAll("/",",").split(",");
                     // imgRef.replace("/",",");
-                    imgRef = imgRef.split(",");
-                    const io=imgRef[4];
-                    const dateArr = imgRef[2];
-                    imgRef[3]=dateArr;
-                    imgRef[2]=io;
-                    imgRef.splice(4,1);
-                    imgRef=imgRef.toString().replaceAll(",","/")+"/";
-                    console.log(imgRef);
-                    refFile=imgRef;
+                    // imgRef = imgRef.split(",");
+                    // const io=imgRef[4];
+                    // const dateArr = imgRef[2];
+                    // imgRef[3]=dateArr;
+                    // imgRef[2]=io;
+                    // imgRef.splice(4,1);
+                    // imgRef=imgRef.toString().replaceAll(",","/")+"/";
+                    // console.log(imgRef);
                     storage_f.ref(imgRef).listAll().then((res)=>{
                       res.items.forEach((itemRef)=>{
                         itemRef.getDownloadURL().then((url)=>{
@@ -474,13 +452,16 @@ function upLoad(){
                     // popClose();
                 }
             });
-        })
+          })
         .catch(error => {
           alert("Error uploading file:", error);
           console.error("Error uploading file:", error);
+        });
       });
-    });
     toastOn(imgUrls.length+" 파일 업로드 완료");
         }
-
+    }else{
+      alert("업로드 취소");
+    }
+  }
 }
