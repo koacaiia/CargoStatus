@@ -22,8 +22,15 @@ const logIn =localStorage.getItem("logData");
 //   }
 const mC = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 console.log("mobileCheck",mC);
-toastOn("Device : "+mC,1000);
-
+if(mC){
+  const basicDiv = document.querySelector("#searchDiv");
+  const h1= basicDiv.querySelectorAll("h1");
+  h1.forEach((e)=>{
+    const h6 = document.createElement("h6");
+    h6.innerHTML=e.innerHTML;
+    e.replaceWith(h6);
+  });
+}
 const dateT = (d)=>{
   let result_date;
   try{
