@@ -20,27 +20,7 @@ const logIn =localStorage.getItem("logData");
 // if(logIn == null){
 //   ("로그인 후 사용 가능합니다.");
 //   }
-const mC = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-console.log("mobileCheck",mC);
-if(mC){
-  const basicDiv = document.querySelector("#searchDiv");
-  const h1= basicDiv.querySelectorAll("h1");
-  h1.forEach((e)=>{
-    // const h6 = document.createElement("h6");
-    // h6.innerHTML=e.innerHTML;
-    // if(e.id="elapsedDate"){
-    //   h6.id="elapsedDate";
-    // }
-    // if(e.id="cont20"){
-    //   h6.id="cont20";
-    // }
-    // if(e.id="cont40"){
-    //   h6.id="cont40";
-    // }
-    // e.replaceWith(h6);
-    e.style.fontSize="0.5vw";
-  });
-}
+
 const dateT = (d)=>{
   let result_date;
   try{
@@ -498,3 +478,4 @@ function upLoad(){
     }
   }
 }
+

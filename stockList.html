@@ -35,9 +35,13 @@
         tbody tr,td{
             height:5vh;
             white-space: nowrap; /* 줄 바꿈 방지 */
-    overflow: hidden; /* 넘치는 텍스트 숨김 */
-    text-overflow: ellipsis; /
-
+            overflow: hidden; /* 넘치는 텍스트 숨김 */
+            text-overflow: ellipsis; /* 말줄임표 표시 */    
+        }
+        @media screen and (max-width: 768px) {
+            tbody tr,td {
+            font-size:1.5vh; /* 모바일에서 작은 글자 크기 */
+            }
         }
         tr {
             display: table;
