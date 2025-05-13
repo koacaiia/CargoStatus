@@ -38,11 +38,7 @@
             overflow: hidden; /* 넘치는 텍스트 숨김 */
             text-overflow: ellipsis; /* 말줄임표 표시 */    
         }
-        @media screen and (max-width: 768px) {
-            tbody tr,td {
-            font-size:1.5vh; /* 모바일에서 작은 글자 크기 */
-            }
-        }
+        
         tr {
             display: table;
             width: 100%;
@@ -88,6 +84,14 @@
         #imageT button{
             border:1px solid rgb(244, 241, 241);
             border-radius: 5px;
+        }
+        @media screen and (max-width: 768px) {
+            tbody tr,td {
+            font-size:1vh; /* 모바일에서 작은 글자 크기 */
+            }
+            h1{
+                font-size: 1.5vh; /* 모바일에서 작은 글자 크기 */
+            }
         }
     </style>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
