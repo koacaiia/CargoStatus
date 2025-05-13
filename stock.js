@@ -20,6 +20,10 @@ const logIn =localStorage.getItem("logData");
 // if(logIn == null){
 //   ("로그인 후 사용 가능합니다.");
 //   }
+const mC = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+console.log("mobileCheck",mC);
+toastOn("Device : "+mC,1000);
+
 const dateT = (d)=>{
   let result_date;
   try{
@@ -387,11 +391,22 @@ function upLoad(){
   if(selectC){
     const upLoadData=confirm(selectC+" 의 내용으로 서버에 저장 됩니다.");
     if(upLoadData){
-      const upLoadHistory={history:selectC+","};
-      database_f.ref(dataRef).update(upLoadHistory).then(()=>{
-        console.log("업로드 완료");
-      }).catch((e)=>{
-        console.log(e);
+      let upLoadHistory;
+      const upDatedRef=database_f.ref(dataRef);
+      upDatedRef.get().then((snapshot)=>{
+        const val = snapshot.val()
+        const history = val.history;
+        if(history==""){
+          upLoadHistory={history:selectC+","};
+        }else{
+          upLoadHistory={history:history+selectC+","};
+        }
+        console.log("history",history);
+        upDatedRef.update(upLoadHistory).then(()=>{
+          console.log("업로드 완료");
+        }).catch((e)=>{
+          console.log(e);
+        });
       });
       let imgUrls = [];
         const img = fileTr.querySelectorAll(".local-img");
