@@ -22,13 +22,23 @@ const logIn =localStorage.getItem("logData");
 //   }
 const mC = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 console.log("mobileCheck",mC);
-if(mC){
+if(!mC){
   const basicDiv = document.querySelector("#searchDiv");
   const h1= basicDiv.querySelectorAll("h1");
   h1.forEach((e)=>{
-    const h6 = document.createElement("h6");
-    h6.innerHTML=e.innerHTML;
-    e.replaceWith(h6);
+    // const h6 = document.createElement("h6");
+    // h6.innerHTML=e.innerHTML;
+    // if(e.id="elapsedDate"){
+    //   h6.id="elapsedDate";
+    // }
+    // if(e.id="cont20"){
+    //   h6.id="cont20";
+    // }
+    // if(e.id="cont40"){
+    //   h6.id="cont40";
+    // }
+    // e.replaceWith(h6);
+    e.style.fontSize="0.5vw";
   });
 }
 const dateT = (d)=>{
@@ -177,6 +187,7 @@ function getList(date,client){
     for (let d = new Date(startDay); d <= endDay; d.setDate(d.getDate() + 1)) {
         elapseDate.push(dateT(d)); // 날짜를 배열에 추가
     }
+    console.log("elapseDate",elapseDate);
     document.querySelector("#elapsedDate").innerHTML = elapseDate[0]+" ~ "+elapseDate[elapseDate.length-1];
     getList(elapseDate);
     
