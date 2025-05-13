@@ -22,7 +22,7 @@ const logIn =localStorage.getItem("logData");
 //   }
 const mC = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 console.log("mobileCheck",mC);
-if(!mC){
+if(mC){
   const basicDiv = document.querySelector("#searchDiv");
   const h1= basicDiv.querySelectorAll("h1");
   h1.forEach((e)=>{
