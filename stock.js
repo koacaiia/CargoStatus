@@ -199,6 +199,20 @@ function getList(date,client){
     
     fileTr.replaceChildren();
   dataRef = document.querySelector(".selected").id;
+  database_f.ref(dataRef).get().then((snapshot)=>{
+    const val = snapshot.val();
+    if(val==null){
+      alert("선택한 데이터가 없습니다.");
+      return;
+    }
+    const history = val.history;
+    if(history!=""||history==undefined){
+      const his = history.replaceAll(",","\n");
+      alert("선택한 화물 추가가 이력 : \n"+his);
+    }
+  }).catch((e)=>{
+    console.log(e);
+  });
   imgRef=dataRef.replace("DeptName","images").replaceAll("/",",");
   imgRef = imgRef.split(",");
   const io=imgRef[4];
