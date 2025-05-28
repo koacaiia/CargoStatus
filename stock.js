@@ -208,7 +208,7 @@ function getList(date,client){
     const history = val.history;
     if(history!=""||history==undefined){
       const his = history.replaceAll(",","\n");
-      alert("선택한 화물 추가가 이력 : \n"+his);
+      showHistoryToast("선택한 화물 추가 이력 :\n" + his, 8000);
     }
   }).catch((e)=>{
     console.log(e);
@@ -493,3 +493,22 @@ function upLoad(){
   }
 }
 
+function showHistoryToast(msg, duration) {
+  const toast = document.createElement("div");
+  toast.style.position = "fixed";
+  toast.style.left = "50%";
+  toast.style.top = "20%";
+  toast.style.transform = "translate(-50%, 0)";
+  toast.style.background = "rgba(34,34,34,0.95)";
+  toast.style.color = "#fff";
+  toast.style.padding = "24px 32px";
+  toast.style.borderRadius = "12px";
+  toast.style.fontSize = "1.2rem";
+  toast.style.whiteSpace = "pre-line";
+  toast.style.zIndex = "9999";
+  toast.innerText = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.remove();
+  }, duration || 5000);
+}
