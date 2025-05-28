@@ -497,6 +497,7 @@ function showHistoryToast(msg, duration) {
   const toast = document.createElement("div");
   toast.style.position = "fixed";
   toast.style.left = "50%";
+  toast.style.width = "80%";
   toast.style.top = "20%";
   toast.style.transform = "translate(-50%, 0)";
   toast.style.background = "rgba(34,34,34,0.95)";
