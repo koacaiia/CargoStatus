@@ -13,10 +13,10 @@ if(firebase.apps.length==0){
 }
 else{firebase.app();}
 const doc =document.documentElement;
-function fullScreen(){
-  doc.requestFullscreen();
-}
-fullScreen();
+// function fullScreen(){
+//   doc.requestFullscreen();
+// }
+// fullScreen();
 const database_f = firebase.database();
 const messaging = firebase.messaging();
 const storage_f = firebase.storage();
@@ -45,6 +45,24 @@ const dateT = (d)=>{
     return result_date ="미정";
     }
 };
+let cliV = localStorage.getItem("stockListPassword");
+let cliVo;
+let cliVi;
+if(cliV==null){
+  const passW= prompt("재고목록 비밀번호를 설정하세요.");
+  if(passW)
+  {localStorage.setItem("stockListPassword",passW);
+
+    }
+  if(passW==null || passW==""){
+    alert("비밀번호를 설정하지 않으면 재고목록을 볼 수 없습니다.");
+    location.href="https://koacaiia.github.io/Wms-fine-/";
+}}else{
+  if(cliV=="1234"){
+    cliVo="엠엔에프";
+    cliVi="코만";
+  }
+}
 
 const dateSelect = document.querySelector("#dateSelect");
 const tBodyIn=document.querySelector("#tBodyIn");
@@ -57,13 +75,10 @@ function dateChanged(){
     getData(d);
 }
 dateSelect.value=dateT(new Date());
-console.log(dateT(new Date()));
 getData(dateSelect.value);
-let cliV;
 //  = clientSelect.value;
 // titleDate.innerHTML = dateT(new Date());
 // titleDate.innerHTML = "2024-09-24";
-cliV="비앤케이에이"
 function getData(date){
     const year = date.substring(0,4);
     const month=date.substring(5,7);
@@ -76,9 +91,8 @@ function getData(date){
         let lcl=0;
         let plt=0;
         for(let i in val){
-            console.log(val[i]);
             const cli=val[i]["consignee"]
-            if(cli ==cliV){
+            if(cli ==cliVi){
               let spec="";
             if(val[i]["container40"]==="1"){
                 spec="40FT";
@@ -144,11 +158,10 @@ function getData(date){
         let outE = 0;
         let outP = 0;
         for(let i in val){
-          if(val[i]["consigneeName"]==cliV){
+          if(val[i]["consigneeName"]==cliVo){
             const tr = document.createElement("tr");
             outE+=1;
             outP+=parseInt(val[i]["totalQty"].replace("PLT",""));
-            console.log(val[i]["totalQty"].replace("PLT",""));
             tr.id=val[i]["keyValue"];
             let des = val[i]["description"];
             let manNo = val[i]["managementNo"];
@@ -843,6 +856,16 @@ function encryptKoreanToNumber(text) {
   return encryptedText;
 }
 function stockList(){
-  window.location.href = "stockList.html";
+  // window.location.href = "stockList.html";
+  const btnList = document.querySelector("#btnList");
+  btnList.classList.toggle("stockList");
+  if(btnList.classList.contains("stockList")){
+    document.querySelector("#mainContent").style="display:none";
+    btnList.innerHTML="입,출고 현황";
+  }
+  else{
+    document.querySelector("#mainContent").style="display:grid";
+    btnList.innerHTML="재고목록";
+  }
 }
 //

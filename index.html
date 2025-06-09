@@ -18,11 +18,16 @@
     <div id="mainTitle" >
         <div id="mainDateDiv" >
             <input type="password" id="titleClient" placeholder="PassWord" id="titleClient()">
-            <input type="date" id="dateSelect" value="yyyy-MM-dd" onchange="dateChanged()">
-            <button id="titleConfirm" onclick="titleConfirm()">확인</button>
-            
+            <div id="titleDateDiv" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 2fr;height:100%">
+                <button class="periodBtn" id="thisWeek" onclick="peroid(this)">이번주</button>
+                <button class="periodBtn" id="lastWeek" onclick="peroid(this)">지난주</button>
+                <button class="periodBtn" id="thisMonth" onclick="peroid(this)">이번달</button>
+                <button class="periodBtn" id="lastMonth" onclick="peroid(this)">지난달</button>
+                <input type="date" id="dateSelect" value="yyyy-MM-dd" onchange="dateChanged()">    
+            </div>
+            <button id="btnList" onclick="stockList()">재고목록</button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 0.3fr" id="mainStatus" >
+        <div style="display:grid;grid-template-columns:1fr 1fr" id="mainStatus" >
             <div style="display:grid;grid-template-rows:1fr 1fr 1fr;border: 1px solid black;" id="mainStatusIn">
                 <div class="title" style="text-align: center;">입고</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
@@ -48,7 +53,7 @@
                     <div class="title" id="titleOp">Pallet</div>
                 </div>
             </div>
-            <button id="btnList" onclick="stockList()">재고목록</button>
+            
             <!-- <script>
                 function stockList(){
                     window.location.href = "stockList.html";
