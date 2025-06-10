@@ -51,9 +51,7 @@ let cliVi;
 if(cliV==null){
   const passW= prompt("재고목록 비밀번호를 설정하세요.");
   if(passW)
-  {localStorage.setItem("stockListPassword",passW);
-
-    }
+  {localStorage.setItem("stockListPassword",passW);}
   if(passW==null || passW==""){
     alert("비밀번호를 설정하지 않으면 재고목록을 볼 수 없습니다.");
     location.href="https://koacaiia.github.io/Wms-fine-/";
@@ -924,4 +922,10 @@ function peroid(value){
     document.querySelector("#dateSelect").innerHTML = elapseDate[0]+" ~ "+elapseDate[elapseDate.length-1];
     getData(elapseDate);
     
+  }
+  function regClient(){
+    const passOld = localStorage.getItem("stockListPassword");
+    const passW= prompt("재고목록 비밀번호를 설정하세요.\n(기존 비밀번호: "+passOld+")");
+    if(passW)
+    {localStorage.setItem("stockListPassword",passW);}
   }
