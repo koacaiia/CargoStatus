@@ -61,6 +61,9 @@ if(cliV==null){
   if(cliV=="1234"){
     cliVo="엠엔에프";
     cliVi="코만";
+  }if(cliV=="508820"){
+    cliVo="비앤케이에이";
+    cliVi="비앤케이에이";
   }
 }
 
@@ -79,17 +82,23 @@ getData(dateSelect.value);
 //  = clientSelect.value;
 // titleDate.innerHTML = dateT(new Date());
 // titleDate.innerHTML = "2024-09-24";
-function getData(date){
-    const year = date.substring(0,4);
+function getData(elapseDate){
+  let ft4=0;
+  let ft2=0;
+  let lcl=0;
+  let plt=0;
+  let outE = 0;
+  let outP = 0;
+  document.querySelector("#tBodyIn").replaceChildren();
+  document.querySelector("#tBodyOut").replaceChildren();
+  for(let d in elapseDate){
+    const date = elapseDate[d];
     const month=date.substring(5,7);
     const refI ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
     const refO ="DeptName/"+deptName+"/OutCargo/"+month+"월/"+date;
     database_f.ref(refI).get().then((snapshot)=>{
         const val=snapshot.val();
-        let ft4=0;
-        let ft2=0;
-        let lcl=0;
-        let plt=0;
+        
         for(let i in val){
             const cli=val[i]["consignee"]
             if(cli ==cliVi){
@@ -143,10 +152,7 @@ function getData(date){
             }
             
         }
-        toastOn("40FT:"+ft4+"   20FT:"+ft2+"    LCL:"+lcl,4000);
-        document.querySelector("#title40").innerHTML=ft4
-        document.querySelector("#title20").innerHTML=ft2
-        document.querySelector("#titleP").innerHTML=plt
+       
     }).
     catch((e)=>{
       console.log(e);
@@ -155,8 +161,7 @@ function getData(date){
 
     database_f.ref(refO).get().then((snapshot)=>{
         const val=snapshot.val();
-        let outE = 0;
-        let outP = 0;
+        
         for(let i in val){
           if(val[i]["consigneeName"]==cliVo){
             const tr = document.createElement("tr");
@@ -204,12 +209,18 @@ function getData(date){
               tr.style="color:red;font-weight:bold";}
           }
         }
-        document.querySelector("#titleOe").innerHTML=outE;
-        document.querySelector("#titleOp").innerHTML=outP;
+        
     }).catch((e)=>{
       console.log(e);
-        // alert(e);
     });
+  }
+    
+     toastOn("40FT:"+ft4+"   20FT:"+ft2+"    LCL:"+lcl,4000);
+        document.querySelector("#title40").innerHTML=ft4
+        document.querySelector("#title20").innerHTML=ft2
+        document.querySelector("#titleP").innerHTML=plt
+        document.querySelector("#titleOe").innerHTML=outE;
+        document.querySelector("#titleOp").innerHTML=outP;
     
 }
 function popUp(){
@@ -868,4 +879,49 @@ function stockList(){
     btnList.innerHTML="재고목록";
   }
 }
-//
+function peroid(value){
+    const today = new Date(); // 현재 날짜
+    const dayOfWeek = today.getDay(); // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+    let mondayOffset; 
+    let sundayOffset;
+    let startDay;
+    let endDay;
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 
+    if(value.id=="thisWeek"){
+      mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // 이번주 월요일로 이동하는 오프셋
+      sundayOffset = dayOfWeek === 0 ? 0 : 6 - dayOfWeek; // 이번주 토요일로 이동하는 오프셋
+      startDay = new Date(today);
+      startDay.setDate(today.getDate() + mondayOffset); // 이번 주 월요일
+      endDay = new Date(today);
+      endDay.setDate(today.getDate() + sundayOffset); // 이번 주 일요일
+    }
+    if(value.id=="lastWeek"){
+      mondayOffset = dayOfWeek === 0 ? -13 : -6 - dayOfWeek; // 지난주 월요일로 이동하는 오프셋
+      sundayOffset = dayOfWeek === 0 ? -7 : -1 - dayOfWeek; // 지난주 일요일로 이동하는 오프셋
+      startDay = new Date(today);
+      startDay.setDate(today.getDate() + mondayOffset); // 이번 주 월요일
+      endDay = new Date(today);
+      endDay.setDate(today.getDate() + sundayOffset); // 이번 주 일요일
+    }
+    if(value.id=="thisMonth"){
+      startDay = new Date(year, month, 1); // 이번 달의 첫 번째 날
+      endDay = new Date(year, month + 1, 0); // 이번주 토요일로 이동하는 오프셋
+    }
+    if(value.id=="lastMonth"){
+      startDay = new Date(year, month - 1, 1); // 지난 달의 첫 번째 날
+      endDay = new Date(year, month, 0); // 이번주 토요일로 이동하는 오프셋
+    }
+    if(value.id=="thisYear"){
+      startDay = new Date(year, 0, 1); // 이번 달의 첫 번째 날
+      endDay = new Date(year, 11, 31); // 이번주 토요일로 이동하는 오프셋
+    }
+    elapseDate = []; // 날짜를 저장할 배열 초기화
+    for (let d = new Date(startDay); d <= endDay; d.setDate(d.getDate() + 1)) {
+        elapseDate.push(dateT(d)); // 날짜를 배열에 추가
+    }
+    console.log("elapseDate",elapseDate);
+    document.querySelector("#dateSelect").innerHTML = elapseDate[0]+" ~ "+elapseDate[elapseDate.length-1];
+    getData(elapseDate);
+    
+  }
