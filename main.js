@@ -76,7 +76,7 @@ function dateChanged(){
     getData(d);
 }
 dateSelect.value=dateT(new Date());
-getData(dateSelect.value);
+getData([dateSelect.value,""]);
 //  = clientSelect.value;
 // titleDate.innerHTML = dateT(new Date());
 // titleDate.innerHTML = "2024-09-24";
@@ -87,9 +87,11 @@ function getData(elapseDate){
   let plt=0;
   let outE = 0;
   let outP = 0;
+  console.log(elapseDate);
   document.querySelector("#tBodyIn").replaceChildren();
   document.querySelector("#tBodyOut").replaceChildren();
   for(let d in elapseDate){
+    console.log(elapseDate[d]);
     const date = elapseDate[d];
     const month=date.substring(5,7);
     const refI ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
