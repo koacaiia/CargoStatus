@@ -56,13 +56,21 @@ if(cliV==null){
     alert("비밀번호를 설정하지 않으면 재고목록을 볼 수 없습니다.");
     location.href="https://koacaiia.github.io/Wms-fine-/";
 }}else{
-  if(cliV=="1234"){
+  if(cliV=="430344"){
     cliVo="엠엔에프";
     cliVi="코만";
   }if(cliV=="508820"){
     cliVo="비앤케이에이";
     cliVi="비앤케이에이";
-  }
+  }if(cliV=="fine2"){ 
+    cliVo="all";
+    cliVi="all";
+  }if(cliV=="1062993"){
+    cliVo="HS트레이딩";
+    cliVi="HS트레이딩";
+  }if(cliV=="429640"){
+    cliVo="케이비켐㈜";
+    cliVi="케이비켐㈜";}
 }
 
 const dateSelect = document.querySelector("#dateSelect");
@@ -73,7 +81,7 @@ function dateChanged(){
     const d = dateSelect.value;
     tBodyIn.replaceChildren();
     tBodyOut.replaceChildren();
-    getData(d);
+    getData(d,"");
 }
 dateSelect.value=dateT(new Date());
 getData([dateSelect.value,""]);
@@ -87,21 +95,18 @@ function getData(elapseDate){
   let plt=0;
   let outE = 0;
   let outP = 0;
-  console.log(elapseDate);
   document.querySelector("#tBodyIn").replaceChildren();
   document.querySelector("#tBodyOut").replaceChildren();
   for(let d in elapseDate){
-    console.log(elapseDate[d]);
     const date = elapseDate[d];
     const month=date.substring(5,7);
     const refI ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
     const refO ="DeptName/"+deptName+"/OutCargo/"+month+"월/"+date;
     database_f.ref(refI).get().then((snapshot)=>{
         const val=snapshot.val();
-        
         for(let i in val){
             const cli=val[i]["consignee"]
-            if(cli ==cliVi){
+            if(cliVi=="all"){
               let spec="";
             if(val[i]["container40"]==="1"){
                 spec="40FT";
@@ -150,20 +155,111 @@ function getData(elapseDate){
                 }
                 plt=plt+parseInt(val[i]["Pqty"]);
             }
-            
+            else if(cli ==cliVi){
+              let spec="";
+            if(val[i]["container40"]==="1"){
+                spec="40FT";
+              ft4+=1;}
+            else if(val[i]["container20"]==="1"){
+                spec="20FT";
+              ft2+=1;}
+            else if(val[i]["lclcargo"]!="0"){
+                spce="LcL";
+                lcl+=1;
+            }else{
+             continue
+            }
+            const tr = document.createElement("tr");
+            tr.id=val[i]["refValue"];
+            const td1 = document.createElement("td");
+            td1.innerHTML=val[i]["consignee"];
+            const td2 = document.createElement("td");
+            td2.innerHTML=val[i]["container"];
+            const td3 = document.createElement("td");
+            td3.innerHTML=val[i]["Pqty"];
+            const td4 = document.createElement("td");
+            td4.innerHTML=spec;
+            const td5 = document.createElement("td");
+            td5.innerHTML=val[i]["description"];
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tr.appendChild(td4);
+            tr.appendChild(td5);
+            tBodyIn.appendChild(tr);
+            tr.addEventListener("click",(e)=>{
+                const trList = document.querySelectorAll("#tBodyIn tr");
+                trList.forEach((e)=>{
+                  if(e.classList.contains("clicked")){
+                       e.classList.remove("clicked");}
+                });
+                e.target.parentNode.classList.toggle("clicked");
+                // document.querySelector("#mainOut").style="display:none";
+                ref=tr.id;
+                ioValue="InCargo";
+                popUp();
+            });
+            if(val[i]["working"]!=""){
+                tr.style="color:red;font-weight:bold";
+                }
+                plt=plt+parseInt(val[i]["Pqty"]);
+            }
         }
-       
     }).
     catch((e)=>{
       console.log(e);
         // alert(e);
     });
-
     database_f.ref(refO).get().then((snapshot)=>{
         const val=snapshot.val();
-        
         for(let i in val){
-          if(val[i]["consigneeName"]==cliVo){
+          if(cliVi=="all"){
+             const tr = document.createElement("tr");
+            outE+=1;
+            outP+=parseInt(val[i]["totalQty"].replace("PLT",""));
+            tr.id=val[i]["keyValue"];
+            let des = val[i]["description"];
+            let manNo = val[i]["managementNo"];
+            if(des.includes(",")){
+              des = des.substring(0,des.indexOf(",")+1).replace(",","_외");
+              manNo = manNo.substring(0,manNo.indexOf(",")+1).replace(",","_외");
+            }
+            const td1 = document.createElement("td");
+            td1.innerHTML=val[i]["consigneeName"];
+            const td2 = document.createElement("td");
+            td2.innerHTML=val[i]["outwarehouse"];
+            const td3 = document.createElement("td");
+            td3.innerHTML=des;
+            const td4 = document.createElement("td");
+            td4.innerHTML=manNo;
+            const td5 = document.createElement("td");
+            td5.innerHTML=val[i]["totalQty"];
+            const td6 = document.createElement("td");
+            td6.innerHTML=val[i]["totalEa"];
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tr.appendChild(td4);
+            tr.appendChild(td5);
+            tr.appendChild(td6);
+            tBodyOut.appendChild(tr);
+            tr.addEventListener("click",(e)=>{
+                const trList = document.querySelectorAll("#tBodyOut tr");
+                trList.forEach((e)=>{
+                  if(e.classList.contains("clicked")){
+                    e.classList.remove("clicked");}
+                });
+                e.target.parentNode.classList.toggle("clicked");
+                // document.querySelector("#mainIn").style="display:none";
+                ref=tr.id;
+                ioValue="outCargo";
+                popUp();
+            });
+            if(val[i]["workprocess"]!="미"){
+              tr.style="color:red;font-weight:bold";}
+          
+          }
+          else if(val[i]["consigneeName"]==cliVo){
             const tr = document.createElement("tr");
             outE+=1;
             outP+=parseInt(val[i]["totalQty"].replace("PLT",""));
@@ -209,18 +305,18 @@ function getData(elapseDate){
               tr.style="color:red;font-weight:bold";}
           }
         }
-        
-    }).catch((e)=>{
-      console.log(e);
-    });
-  }
-    
-     toastOn("40FT:"+ft4+"   20FT:"+ft2+"    LCL:"+lcl,4000);
+         toastOn("40FT:"+ft4+"   20FT:"+ft2+"    LCL:"+lcl,4000);
         document.querySelector("#title40").innerHTML=ft4
         document.querySelector("#title20").innerHTML=ft2
         document.querySelector("#titleP").innerHTML=plt
         document.querySelector("#titleOe").innerHTML=outE;
         document.querySelector("#titleOp").innerHTML=outP;
+    }).catch((e)=>{
+      console.log(e);
+    });
+  }
+    
+    
     
 }
 function popUp(){
@@ -864,8 +960,11 @@ function encryptKoreanToNumber(text) {
           encryptedText += parseInt(char); // 한글이 아닌 문자는 그대로 추가
       }
   }
+  console.log("encryptedText",encryptedText);
   return encryptedText;
+  
 }
+encryptKoreanToNumber("엠엔에프");
 function stockList(){
   // window.location.href = "stockList.html";
   const btnList = document.querySelector("#btnList");
@@ -930,4 +1029,5 @@ function peroid(value){
     const passW= prompt("재고목록 비밀번호를 설정하세요.\n(기존 비밀번호: "+passOld+")");
     if(passW)
     {localStorage.setItem("stockListPassword",passW);}
+    location.reload();
   }

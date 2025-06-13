@@ -295,3 +295,30 @@ button{
     vertical-align: middle;
     font-weight: bold;
 }
+#titleClient:hover {
+    background-color: #ffe0e0;
+    color: #b80000;
+    border: 1px solid #b80000;
+    cursor: pointer;
+    transition: 0.2s;
+}
+#titleClient .hover-tooltip {
+    display: none;
+    position: fixed; /* fixed로 변경 */
+    pointer-events: none;
+    background: #222;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    white-space: nowrap;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    left: 40%;
+    top: 40%;
+    transform: none; /* transform 제거 */
+}
+
+#titleClient:hover .hover-tooltip {
+    display: block;
+}
