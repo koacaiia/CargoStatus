@@ -72,7 +72,6 @@ if(cliV==null){
     cliVo="케이비켐㈜";
     cliVi="케이비켐㈜";}
 }
-
 const dateSelect = document.querySelector("#dateSelect");
 const tBodyIn=document.querySelector("#tBodyIn");
 const tBodyOut=document.querySelector("#tBodyOut");
@@ -966,17 +965,20 @@ function encryptKoreanToNumber(text) {
 }
 encryptKoreanToNumber("엠엔에프");
 function stockList(){
-  // window.location.href = "stockList.html";
+  //
   const btnList = document.querySelector("#btnList");
   btnList.classList.toggle("stockList");
   if(btnList.classList.contains("stockList")){
     document.querySelector("#mainContent").style="display:none";
     btnList.innerHTML="입,출고 현황";
+    window.location.href = "stockList.html?cliVi=" + encodeURIComponent(cliVi || window.cliVi);
   }
   else{
     document.querySelector("#mainContent").style="display:grid";
     btnList.innerHTML="재고목록";
+    window.location.href = "index.html";
   }
+   
 }
 function peroid(value){
     const today = new Date(); // 현재 날짜

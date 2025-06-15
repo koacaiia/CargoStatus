@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' http://127.0.0.1:5500;"> -->
     <title>StockList</title>
     <style>
         table {
@@ -114,7 +115,7 @@
     <div id="searchDiv" style="display:grid;grid-template-columns: 1fr 1fr ;border:2px solid black;border-radius:10px;background-color: rgb(199, 192, 205);padding:1vh;row-gap:1vh">
         <div style="display:grid;grid-template-columns:2fr 1fr ">
             <h1 id="elapsedDate" style="text-align: center;">상단 기간 지정후 검색</h1>
-            <select id="clientList" style="text-align:center;height:80%;margin-top:3%;width:90%">ClientList</select>
+            <h1 id="clientListTitle">ClientList</h1>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr">
                 <h1 style="text-align: center;">20FT</h1>

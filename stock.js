@@ -16,11 +16,9 @@ const doc =document.documentElement;
 function fullScreen(){
   doc.requestFullscreen();
 }
-const logIn =localStorage.getItem("logData");
-// if(logIn == null){
-//   ("로그인 후 사용 가능합니다.");
-//   }
-
+const urlParams = new URLSearchParams(window.location.search);
+const cliVi = urlParams.get('cliVi');
+document.querySelector("#clientListTitle").innerHTML = cliVi;
 const dateT = (d)=>{
   let result_date;
   try{
@@ -47,7 +45,6 @@ const deptName = "WareHouseDept2";
 let elapseDate;
 let imgRef;
 let dataRef;
-const cL = document.querySelector("#clientList");
 const dateEle = document.querySelector("#entryDate");
 const desEle = document.querySelector("#desList");
 const tBody = document.querySelector("#stockList");
@@ -62,14 +59,7 @@ dateEle.addEventListener("change",()=>{
 function getList(date,client){
     let cont20=0;
     let cont40=0;
-    cL.replaceChildren();
     tBody.replaceChildren();
-    if(client==undefined){
-      const op = document.createElement("option");
-      op.value="All Client";
-      op.text="거래처 선택";
-      cL.appendChild(op);
-    }
     let cList=[];      
     for(let i=0;i<date.length;i++){
       const month=date[i].substring(5,7);
@@ -103,13 +93,7 @@ function getList(date,client){
                 popUp();
                 });
               tBody.appendChild(tr);
-              if(!cList.includes(val[key]["consignee"])){
-                cList.push(val[key]["consignee"]);
-                const op1 = document.createElement("option");
-                op1.value=val[key]["consignee"];
-                op1.text=val[key]["consignee"];
-                cL.appendChild(op1);
-              }
+             
             }
             
           }
