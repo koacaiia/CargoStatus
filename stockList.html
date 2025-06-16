@@ -94,6 +94,14 @@
                 font-size: 1.5vh; /* 모바일에서 작은 글자 크기 */
             }
         }
+        #clientList{
+            width: 100%;
+            height: 70%;
+            text-align: center;
+            border-radius: 10px;
+            border: 1px solid black;
+            margin-top:5%;
+        }
     </style>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
      <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
@@ -112,10 +120,12 @@
         <input style="width:100%;height:95%;text-align: center;"type="date" id="entryDate" name="entryDate" required>
     </div>
     
-    <div id="searchDiv" style="display:grid;grid-template-columns: 1fr 1fr ;border:2px solid black;border-radius:10px;background-color: rgb(199, 192, 205);padding:1vh;row-gap:1vh">
-        <div style="display:grid;grid-template-columns:2fr 1fr ">
+    <div id="searchDiv" style="display:grid;grid-template-columns: 1.2fr 1fr ;border:2px solid black;border-radius:10px;background-color: rgb(199, 192, 205);padding:1vh;row-gap:1vh">
+        <div style="display:grid;grid-template-columns:2fr 1fr">
             <h1 id="elapsedDate" style="text-align: center;">상단 기간 지정후 검색</h1>
-            <h1 id="clientListTitle">ClientList</h1>
+            <div id="clientListDiv"></div>
+            <!-- <h1 id="clientListTitle" style="text-align: center;">ClientList</h1>
+            <select id="clientList" style="text-align:center;height:60%;margin-top:10%;width:90%">ClientList</select> -->
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr">
                 <h1 style="text-align: center;">20FT</h1>

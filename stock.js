@@ -16,9 +16,31 @@ const doc =document.documentElement;
 function fullScreen(){
   doc.requestFullscreen();
 }
+let elapseDate;
+const logIn = localStorage.getItem("logData");
+if(logIn == null|| logIn == undefined || logIn ==""){
+  alert("로그인후 사용가능 합니다.");
+  location.href="https://koacaiia.github.io/CargoStatus";
+    
+}
 const urlParams = new URLSearchParams(window.location.search);
 const cliVi = urlParams.get('cliVi');
-document.querySelector("#clientListTitle").innerHTML = cliVi;
+if(cliVi =="all"){
+  const clientList = document.createElement("select");
+  clientList.setAttribute("id","clientList");
+  const op = document.createElement("option");
+      op.value="All Client";
+      op.text="거래처 선택";
+      clientList.appendChild(op)
+      document.querySelector("#clientListDiv").appendChild(clientList);
+      clientList.addEventListener("change",()=>{
+          getList(elapseDate,clientList.value);
+        });
+}else{
+  const clientList = document.createElement("h1");
+  clientList.innerHTML = cliVi;
+  document.querySelector("#clientListDiv").appendChild(clientList);
+}
 const dateT = (d)=>{
   let result_date;
   try{
@@ -42,7 +64,7 @@ const database_f = firebase.database();
 const messaging = firebase.messaging();
 const storage_f = firebase.storage();
 const deptName = "WareHouseDept2";
-let elapseDate;
+
 let imgRef;
 let dataRef;
 const dateEle = document.querySelector("#entryDate");
@@ -59,7 +81,11 @@ dateEle.addEventListener("change",()=>{
 function getList(date,client){
     let cont20=0;
     let cont40=0;
+    if(cliVi =="all"){
+      document.querySelector("#clientList").replaceChildren();
+    }
     tBody.replaceChildren();
+    
     let cList=[];      
     for(let i=0;i<date.length;i++){
       const month=date[i].substring(5,7);
@@ -93,7 +119,16 @@ function getList(date,client){
                 popUp();
                 });
               tBody.appendChild(tr);
-             
+              if(cliVi =="all"){
+                const cL = document.querySelector("#clientList");
+                
+              if(!cList.includes(val[key]["consignee"])){
+                cList.push(val[key]["consignee"]);
+                const op1 = document.createElement("option");
+                op1.value=val[key]["consignee"];
+                op1.text=val[key]["consignee"];
+                cL.appendChild(op1);
+              }}
             }
             
           }
@@ -106,10 +141,7 @@ function getList(date,client){
     }
     
   }
-  cL.addEventListener("change",()=>{
-    const client = cL.value;
-    getList(elapseDate,client);
-  });
+ 
   function peroid(value){
     const today = new Date(); // 현재 날짜
     const dayOfWeek = today.getDay(); // 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
@@ -152,7 +184,9 @@ function getList(date,client){
         elapseDate.push(dateT(d)); // 날짜를 배열에 추가
     }
     console.log("elapseDate",elapseDate);
-    document.querySelector("#elapsedDate").innerHTML = elapseDate[0]+" ~ "+elapseDate[elapseDate.length-1];
+    const dateEle = document.querySelector("#elapsedDate")
+    dateEle.innerHTML = elapseDate[0]+" ~ "+elapseDate[elapseDate.length-1];
+    dateEle.style.fontSize="1.8rem";
     getList(elapseDate);
     
   }
@@ -392,7 +426,7 @@ function upLoad(){
       upDatedRef.get().then((snapshot)=>{
         const val = snapshot.val()
         const history = val.history;
-        if(history==""){
+        if(history==""||history==undefined){
           upLoadHistory={history:selectC+","};
         }else{
           upLoadHistory={history:history+selectC+","};
