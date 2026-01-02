@@ -99,7 +99,9 @@ function getData(elapseDate){
   for(let d in elapseDate){
     const date = elapseDate[d];
     const month=date.substring(5,7);
-    const refI ="DeptName/"+deptName+"/InCargo/"+month+"월/"+date;
+    const year=date.substring(0,4);
+    const day=date.substring(8,10);
+    const refI ="DeptName/"+deptName+"/InCargo/"+year+"/"+month+"/"+day+"/"+cliVi;
     const refO ="DeptName/"+deptName+"/OutCargo/"+month+"월/"+date;
     database_f.ref(refI).get().then((snapshot)=>{
         const val=snapshot.val();
