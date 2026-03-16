@@ -45,6 +45,37 @@ const dateT = (d)=>{
     return result_date ="미정";
     }
 };
+
+const buildOutImagePathFromKeyValue = (keyValue) => {
+  if (!keyValue) {
+    return "";
+  }
+  const normalized = keyValue
+    .replaceAll("\\", "/")
+    .replace(/\/+/g, "/")
+    .replace(/^\/+|\/+$/g, "");
+  const parts = normalized.split("/");
+
+  if (parts[0] === "images") {
+    return normalized + "/";
+  }
+  if (parts[0] !== "DeptName" || parts.length < 4) {
+    return "images/" + normalized + "/";
+  }
+
+  const dept = parts[1];
+  const afterIo = parts.slice(3);
+  const dateIdx = afterIo.findIndex((p) => /^\d{4}-\d{2}-\d{2}$/.test(p));
+  const monthIdx = afterIo.findIndex((p) => p.includes("월"));
+
+  if (dateIdx >= 0) {
+    const [year, month, day] = afterIo[dateIdx].split("-");
+    const tail = afterIo.filter((_, idx) => idx !== dateIdx && idx !== monthIdx);
+    return ["images", dept, "OutCargo", year, month, day, ...tail].join("/") + "/";
+  }
+
+  return normalized.replace(/^DeptName\//, "images/").replace("/InCargo/", "/OutCargo/") + "/";
+};
 let cliV = localStorage.getItem("stockListPassword");
 let cliVo;
 let cliVi;
@@ -218,7 +249,8 @@ function getData(elapseDate){
              const tr = document.createElement("tr");
             outE+=1;
             outP+=parseInt(val[i]["totalQty"].replace("PLT",""));
-            tr.id=val[i]["keyValue"];
+            tr.dataset.dbRef = val[i]["keyValue"];
+            tr.id = buildOutImagePathFromKeyValue(val[i]["keyValue"]);
             let des = val[i]["description"];
             let manNo = val[i]["managementNo"];
             if(des.includes(",")){
@@ -252,9 +284,9 @@ function getData(elapseDate){
                 });
                 e.target.parentNode.classList.toggle("clicked");
                 // document.querySelector("#mainIn").style="display:none";
-                ref=tr.id;
+                ref = tr.dataset.dbRef || "";
                 ioValue="outCargo";
-                popUp(ref);
+                popUp(tr.id);
             });
             if(val[i]["workprocess"]!="미"){
               tr.style="color:red;font-weight:bold";}
@@ -264,7 +296,8 @@ function getData(elapseDate){
             const tr = document.createElement("tr");
             outE+=1;
             outP+=parseInt(val[i]["totalQty"].replace("PLT",""));
-            tr.id=val[i]["keyValue"];
+            tr.dataset.dbRef = val[i]["keyValue"];
+            tr.id = buildOutImagePathFromKeyValue(val[i]["keyValue"]);
             let des = val[i]["description"];
             let manNo = val[i]["managementNo"];
             if(des.includes(",")){
@@ -298,9 +331,9 @@ function getData(elapseDate){
                 });
                 e.target.parentNode.classList.toggle("clicked");
                 // document.querySelector("#mainIn").style="display:none";
-                ref=tr.id;
+                ref = tr.dataset.dbRef || "";
                 ioValue="outCargo";
-                popUp(ref);
+                popUp(tr.id);
             });
             if(val[i]["workprocess"]!="미"){
               tr.style="color:red;font-weight:bold";}
@@ -552,30 +585,90 @@ function popUp(imgRef){
   };
   fileTr.replaceChildren();
   const getImagePathCandidates = (sourceRef) => {
+    const makePath = (path) => {
+      const cleaned = path
+        .replaceAll("\\", "/")
+        .replace(/\/+/g, "/")
+        .replace(/^\/+|\/+$/g, "");
+      return cleaned ? cleaned + "/" : "";
+    };
+
     const candidates = [];
-    if (!sourceRef) {
+    const normalizedSource = makePath((sourceRef || "").trim());
+    if (!normalizedSource) {
       return candidates;
     }
-    const normalized = sourceRef.endsWith("/") ? sourceRef : sourceRef + "/";
-    candidates.push(normalized);
 
-    if (sourceRef.startsWith("DeptName/")) {
-      const direct = sourceRef.replace("DeptName", "images");
-      candidates.push(direct.endsWith("/") ? direct : direct + "/");
+    // Try exact tr.id/source path first (do not alter commas in names).
+    candidates.push(normalizedSource);
 
-      let convertedRef = direct.replaceAll("/", ",").split(",");
-      if (convertedRef.length > 4) {
-        const io = convertedRef[4];
-        const dateArr = convertedRef[2];
-        convertedRef[3] = dateArr;
-        convertedRef[2] = io;
-        convertedRef.splice(4, 1);
-      }
-      const swapped = convertedRef.toString().replaceAll(",", "/");
-      candidates.push(swapped.endsWith("/") ? swapped : swapped + "/");
+    // Fallback only for legacy comma-separated refs.
+    const commaConvertedSource = makePath((sourceRef || "").trim().replaceAll(",", "/"));
+    if (commaConvertedSource && commaConvertedSource !== normalizedSource) {
+      candidates.push(commaConvertedSource);
     }
 
-    return [...new Set(candidates)];
+    const srcParts = normalizedSource.replace(/\/$/, "").split("/");
+    let imagesPath = normalizedSource;
+    if (srcParts[0] === "DeptName") {
+      imagesPath = makePath(normalizedSource.replace(/^DeptName\//, "images/"));
+
+      // Legacy conversion used by previous upload logic.
+      let legacy = normalizedSource.replace(/^DeptName\//, "images/").replaceAll("/", ",").split(",");
+      if (legacy.length > 4) {
+        const io = legacy[4];
+        const dateArr = legacy[2];
+        legacy[3] = dateArr;
+        legacy[2] = io;
+        legacy.splice(4, 1);
+        candidates.push(makePath(legacy.toString().replaceAll(",", "/")));
+      }
+    }
+
+    const imageParts = imagesPath.replace(/\/$/, "").split("/");
+    if (imageParts[0] === "images" && imageParts.length >= 3) {
+      const dept = imageParts[1];
+      let inCargoBase = "";
+
+      const ioIdx = imageParts.findIndex((p) => p === "InCargo" || p === "OutCargo");
+      if (
+        ioIdx >= 0 &&
+        imageParts.length > ioIdx + 3 &&
+        /^\d{4}$/.test(imageParts[ioIdx + 1]) &&
+        /^\d{2}$/.test(imageParts[ioIdx + 2]) &&
+        /^\d{2}$/.test(imageParts[ioIdx + 3])
+      ) {
+        const year = imageParts[ioIdx + 1];
+        const month = imageParts[ioIdx + 2];
+        const day = imageParts[ioIdx + 3];
+        const tail = imageParts.slice(ioIdx + 4);
+        inCargoBase = makePath(["images", dept, "InCargo", year, month, day, ...tail].join("/"));
+      } else {
+        const dateIdx = imageParts.findIndex((p) => /^\d{4}-\d{2}-\d{2}$/.test(p));
+        if (dateIdx >= 0) {
+          const dateToken = imageParts[dateIdx];
+          const [year, month, day] = dateToken.split("-");
+          const tail = imageParts.slice(dateIdx + 1);
+          inCargoBase = makePath(["images", dept, "InCargo", year, month, day, ...tail].join("/"));
+        }
+      }
+
+      if (inCargoBase) {
+        const outCargoFromInCargo = makePath(inCargoBase.replace("/InCargo/", "/OutCargo/"));
+        if (ioValue === "InCargo") {
+          candidates.unshift(inCargoBase);
+        } else if (outCargoFromInCargo) {
+          candidates.unshift(outCargoFromInCargo);
+        }
+        candidates.push(inCargoBase);
+      }
+    }
+
+    if (imagesPath) {
+      candidates.push(imagesPath);
+    }
+
+    return [...new Set(candidates.filter(Boolean))];
   };
 
   const showImgMessage = (message) => {
@@ -590,7 +683,10 @@ function popUp(imgRef){
   const selectedTr = document.querySelector("#mainContent tr.clicked");
   const trIdRef = selectedTr ? selectedTr.id : "";
   const sourceRef = trIdRef || imgRef || ref;
+  console.log("clicked tr.id", trIdRef);
+  console.log("image sourceRef", sourceRef);
   const imgRefCandidates = getImagePathCandidates(sourceRef);
+  const attemptedRefs = [];
 
   if (imgRefCandidates.length===0) {
     showImgMessage("이미지 경로를 찾을 수 없습니다.");
@@ -623,23 +719,53 @@ function popUp(imgRef){
   };
 
   const tryLoadByCandidates = (idx) => {
+    const listAllRecursive = (pathRef) => {
+      return storage_f.ref(pathRef).listAll().then((res) => {
+        const nestedPromises = res.prefixes.map((p) => listAllRecursive(p.fullPath));
+        return Promise.all(nestedPromises).then((nestedItemLists) => {
+          const nestedItems = nestedItemLists.flat();
+          return [...res.items, ...nestedItems];
+        });
+      }).catch(() => {
+        return [];
+      });
+    };
+
     if (idx >= imgRefCandidates.length) {
-      showImgMessage("등록된 이미지가 없습니다.");
+      const tried = attemptedRefs.length ? "<br><small>시도 경로:<br>" + attemptedRefs.join("<br>") + "</small>" : "";
+      showImgMessage("등록된 이미지가 없습니다." + tried);
       return;
     }
     const candidateRef = imgRefCandidates[idx];
     console.log("try image path", candidateRef);
-    storage_f.ref(candidateRef).listAll().then((res)=>{
-      if(res.items.length===0){
+    const refVariants = [...new Set([
+      candidateRef,
+      candidateRef.replace(/\/$/, ""),
+      candidateRef.replace(/\/$/, "") + "/"
+    ].filter((v)=>v && v.trim()!==""))];
+
+    const tryVariant = (vIdx) => {
+      if (vIdx >= refVariants.length) {
         tryLoadByCandidates(idx+1);
         return;
       }
-      refFile=candidateRef;
-      renderStorageItems(res.items);
-    }).catch((e)=>{
-      console.log(e);
-      tryLoadByCandidates(idx+1);
-    });
+      const variantRef = refVariants[vIdx];
+      if (!attemptedRefs.includes(variantRef)) {
+        attemptedRefs.push(variantRef);
+      }
+      listAllRecursive(variantRef).then((allItems)=>{
+        if(allItems.length===0){
+          tryVariant(vIdx+1);
+          return;
+        }
+        refFile=variantRef;
+        renderStorageItems(allItems);
+      }).catch(()=>{
+        tryVariant(vIdx+1);
+      });
+    };
+
+    tryVariant(0);
   };
 
   tryLoadByCandidates(0);
