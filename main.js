@@ -149,7 +149,7 @@ function getData(elapseDate){
                 // document.querySelector("#mainOut").style="display:none";
                 ref=tr.id;
                 ioValue="InCargo";
-                popUp();
+                popUp(ref);
             });
             if(val[i]["working"]!=""){
                 tr.style="color:red;font-weight:bold";
@@ -198,7 +198,7 @@ function getData(elapseDate){
                 // document.querySelector("#mainOut").style="display:none";
                 ref=tr.id;
                 ioValue="InCargo";
-                popUp();
+                popUp(ref);
             });
             if(val[i]["working"]!=""){
                 tr.style="color:red;font-weight:bold";
@@ -254,7 +254,7 @@ function getData(elapseDate){
                 // document.querySelector("#mainIn").style="display:none";
                 ref=tr.id;
                 ioValue="outCargo";
-                popUp();
+                popUp(ref);
             });
             if(val[i]["workprocess"]!="미"){
               tr.style="color:red;font-weight:bold";}
@@ -300,7 +300,7 @@ function getData(elapseDate){
                 // document.querySelector("#mainIn").style="display:none";
                 ref=tr.id;
                 ioValue="outCargo";
-                popUp();
+                popUp(ref);
             });
             if(val[i]["workprocess"]!="미"){
               tr.style="color:red;font-weight:bold";}
@@ -320,7 +320,7 @@ function getData(elapseDate){
     
     
 }
-function popUp(){
+function popUp(imgRef){
     refFile="";
     const mainTitle = document.querySelector("#mainTitle");
     mainTitle.style="display:none";
@@ -551,19 +551,54 @@ function popUp(){
     // document.querySelector(".upload-name").value=document.querySelector("#fileInput").value;
   };
   fileTr.replaceChildren();
-  let imgRef=ref.replace("DeptName","images").replaceAll("/",",");
-  // imgRef.replace("/",",");
-  imgRef = imgRef.split(",");
-  const io=imgRef[4];
-  const dateArr = imgRef[2];
-  imgRef[3]=dateArr;
-  imgRef[2]=io;
-  imgRef.splice(4,1);
-  imgRef=imgRef.toString().replaceAll(",","/")+"/";
-  console.log(imgRef);
-  refFile=imgRef;
-  storage_f.ref(imgRef).listAll().then((res)=>{
-    res.items.forEach((itemRef)=>{
+  const getImagePathCandidates = (sourceRef) => {
+    const candidates = [];
+    if (!sourceRef) {
+      return candidates;
+    }
+    const normalized = sourceRef.endsWith("/") ? sourceRef : sourceRef + "/";
+    candidates.push(normalized);
+
+    if (sourceRef.startsWith("DeptName/")) {
+      const direct = sourceRef.replace("DeptName", "images");
+      candidates.push(direct.endsWith("/") ? direct : direct + "/");
+
+      let convertedRef = direct.replaceAll("/", ",").split(",");
+      if (convertedRef.length > 4) {
+        const io = convertedRef[4];
+        const dateArr = convertedRef[2];
+        convertedRef[3] = dateArr;
+        convertedRef[2] = io;
+        convertedRef.splice(4, 1);
+      }
+      const swapped = convertedRef.toString().replaceAll(",", "/");
+      candidates.push(swapped.endsWith("/") ? swapped : swapped + "/");
+    }
+
+    return [...new Set(candidates)];
+  };
+
+  const showImgMessage = (message) => {
+    const td = document.createElement("td");
+    td.colSpan = 3;
+    td.style.height = "12vh";
+    td.style.fontWeight = "bold";
+    td.innerHTML = message;
+    fileTr.appendChild(td);
+  };
+
+  const selectedTr = document.querySelector("#mainContent tr.clicked");
+  const trIdRef = selectedTr ? selectedTr.id : "";
+  const sourceRef = trIdRef || imgRef || ref;
+  const imgRefCandidates = getImagePathCandidates(sourceRef);
+
+  if (imgRefCandidates.length===0) {
+    showImgMessage("이미지 경로를 찾을 수 없습니다.");
+    return;
+  }
+
+  const renderStorageItems = (items) => {
+    items.forEach((itemRef)=>{
       itemRef.getDownloadURL().then((url)=>{
         const td = document.createElement("td");
         const img = document.createElement("img");
@@ -578,21 +613,36 @@ function popUp(){
         td.style.height="50vh";
         img.style.width="100%";
         img.style.height="100%";
-        img.style.objectFit = "scale-down"; // Ensures the image covers the container without distortion
-        // Create a container div to center the image
-        // const imgContainer = document.createElement("div");
-        // imgContainer.style.display = "flex";
-        // imgContainer.style.justifyContent = "center";
-        // imgContainer.style.alignItems = "center";
-        // imgContainer.style.width = "100%";
-        // imgContainer.style.height = "29vh";
-        // imgContainer.style.position = "relative";
-        // imgContainer.appendChild(img);
+        img.style.objectFit = "scale-down";
         td.appendChild(img);
         fileTr.appendChild(td);
+      }).catch((e)=>{
+        console.log(e);
       });
     });
-  });
+  };
+
+  const tryLoadByCandidates = (idx) => {
+    if (idx >= imgRefCandidates.length) {
+      showImgMessage("등록된 이미지가 없습니다.");
+      return;
+    }
+    const candidateRef = imgRefCandidates[idx];
+    console.log("try image path", candidateRef);
+    storage_f.ref(candidateRef).listAll().then((res)=>{
+      if(res.items.length===0){
+        tryLoadByCandidates(idx+1);
+        return;
+      }
+      refFile=candidateRef;
+      renderStorageItems(res.items);
+    }).catch((e)=>{
+      console.log(e);
+      tryLoadByCandidates(idx+1);
+    });
+  };
+
+  tryLoadByCandidates(0);
 };
 function popClose(){
     document.querySelector("#mainTitle").style="display:grid";
